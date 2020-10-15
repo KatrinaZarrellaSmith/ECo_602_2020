@@ -1,3 +1,75 @@
+#Use "=" to assign a variable name to mirror other computer languages
+
+#naming a vector
+names(mydata)<- c("","","")
+
+#naming a matrix
+rownames(my_matrix) <- row_names_vector
+colnames(my_matrix) <- col_names_vector
+
+#calculate the totals for each row of a matrix
+rowSums(my_matrix)
+
+#contents of workspace
+ls()
+
+#matrix selection
+my_matrix[1,2] #selects the element at the first row and second column.
+my_matrix[1:3,2:4] #results in a matrix with the data on the rows 1, 2, 3 and columns 2, 3, 4.
+my_matrix[,1] #selects all elements of the first column.
+my_matrix[1,] #selects all elements of the first row.
+
+#Comparing data without visual inspection
+#Assign a variable name based on a condition
+subset_mydata <- value>0
+result <- my_data[subset_mydata]
+#use math to review data 
+mean(result)
+
+#factor ordering 
+factor_temperature_vector <- factor(temperature_vector, order = TRUE, 
+                                    levels = c("Low", "Medium", "High"))
+
+#renaming factors
+levels(factor_survey_vector) <-c("Female","Male")
+#Watch out: the order with which you assign the levels is important. 
+#If you type levels(factor_survey_vector), you'll see that it outputs [1] "F" "M". 
+#If you don't specify the levels of the factor when creating the vector, R will automatically assign them alphabetically. To correctly map "F" to "Female" and "M" to "Male", the levels should be set to c("Female", "Male"), in this order.
+
+#indexing dataframes
+# The planets_df data frame from the previous exercise is pre-loaded
+# Select first 5 values of diameter column
+planets_df[1:5,"diameter"]
+
+#If you type rings_vector in the console, you get:
+#  [1] FALSE FALSE FALSE FALSE  TRUE  TRUE  TRUE  TRUE
+# select all columns for planets with rings
+planets_df[rings_vector,]
+#subset
+subset(mydata, subset=condition statement ex<1)
+
+#order function
+a<-c(3,1,2)
+order(a)
+a[order(a)]
+
+# Use order() to create positions
+positions <-  order(mydata$diameter)
+
+# Use positions to sort planets_df
+mydata[positions,]
+
+#assign a value to workspace
+df=data.frame(
+  x=1,
+  y=1)#does not create workspace variable
+
+df=data.frame(
+  x<-1,
+  y<-1)#does create workspace variable
+
+
+
 #DATACAMP Quiz
 #assign a character to a variable
 a = "Katrina Zarrella Smith"
