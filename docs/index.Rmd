@@ -2,7 +2,10 @@
 title: "ECo_602_2020 Final Project"
 author: "Katrina Zarrella Smith"
 date: "10/15/2020"
-output: html_document
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
 ---
 
 ```{r setup, include=FALSE}
@@ -28,3 +31,75 @@ plot(pressure)
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r how to insert a code chunk}
+
+```
+# Here is a demonstration of how to use R Markdown
+
+## Making a new code chunk
+
+The shortcut key (on Windows) is Ctrl+Alt+i
+
+On Mac, Command+Option+i
+
+If I press this key combo, RStudio will insert a new code chunk.
+
+Best practice is to give the chunk a name, it will appear in the navigation pane.
+Be sure to always start the name with "r".
+
+Highlight all the chunk of code you want to comment:
+shift+ctrl+c
+
+To uncomment, highlight all the chunk of code you want to uncomment:
+shift+ctrl+c
+
+## Reading a csv file
+I'm going to read some data from a csv (comma-separated value) file
+
+```{r loading csv file}
+require(here)
+
+dat_birds = read.csv(here("data", "hab.sta.csv")) #class example of birds data
+
+```
+
+## Previewing a data frame
+
+I can use the head() functions to print the first few lines of a data frame.
+Here's an example with the birds data.
+
+```{r head() function}
+
+head(dat_birds)
+
+```
+
+## Demo plot
+
+I can use hist() to create a histogram:
+
+```{r simple plot}
+
+hist(dat_birds$aspect)
+
+```
+
+Notice the end of the plot does not quite look right.
+
+## How to customize a histogram
+
+I can add a title to the histogram by using main()
+
+Put cursor on the gunction and press F1 to get you to the help file of function.
+
+Notice the argument breaks() to change the size of the bins to match your data.
+
+```{r}
+
+hist(dat_birds$aspect,
+     main = "Histogram of study site aspect",
+     breaks = 36)
+
+```
+
