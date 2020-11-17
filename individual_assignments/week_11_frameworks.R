@@ -217,7 +217,7 @@ abline(v = coef(fit_1)[2],
   alpha = 0.05
   n_sims = 100
   p_vals = numeric(n_sims)
-  sample_sizes = seq(10, 50)
+  sample_sizes = seq(5, 50)
   sim_output_1 = numeric(length(sample_sizes))
   for(j in 1:length(sample_sizes))
   {
@@ -249,7 +249,7 @@ abline(v = nrow(birdhab), lty = 2, col = 'red')
 c(sd_obs, sd_obs*7)
 #suggest starting at the observed standard deviation up to 3 times the observed standard deviation
   alpha = 0.05
-  n_sims = 5000
+  n_sims = 5
   p_vals = numeric(n_sims)
   
  # What was the observed standard deviation?
@@ -328,15 +328,15 @@ image(sim_output_2)
 #Population Dispersion and Sample Size Analysis
 #Could we improve our statistical power with larger sample sizes?
 #modify simulation of population standard deviation to include sample size
-alpha = 0.05
-n_sims = 100
+alpha = 0.05 #rerun with 0.01, name output
+n_sims = 10
 p_vals = numeric(n_sims)
 n_sds = 10
 # you can use the values you chose in the last simulation as a guide for what to choose here
 pop_sds = seq(from = sd_obs, to = sd_obs*7, length.out = n_sds)  #vector of SD values
 
 # These were the sample sizes in the walkthrough simulation.  you may want to try a different range.
-sample_sizes = seq(10, 50)
+sample_sizes = seq(5, 50)
 
 sim_output_3 = matrix(nrow = length(pop_sds), ncol = length(sample_sizes))
 
@@ -349,10 +349,10 @@ for(k in 1:length(pop_sds))
     
     for(i in 1:n_sims)
     {
-      fit_sim = linear_sim_fit(x = birdhab$ls,
+      fit_sim = linear_sim_fit(x = x_vals,
                                y_int = int_obs,
                                slope = slope_obs, 
-                               st_dev = pop_sds[j])
+                               st_dev = pop_sds[k])
       
       p_vals[i] = summary(fit_sim)$coefficients[2, 'Pr(>|t|)']
     }
@@ -377,12 +377,27 @@ persp(
   theta = 30, phi = 30, expand = .75,
   ticktype = 'detailed')
 
+#static perspective plot
+persp(
+  x = pop_sds, y = sample_sizes, z = sim_output_3,
+  col = 'lightblue',
+  theta = 30, phi = 30, expand = .75,
+  ticktype = 'detailed')
+
 #interactive plot
 install.packages("rgl")
 library(rgl)
 persp3d(
   x = effect_sizes, y = sample_sizes, z = sim_output_2,
   col = 'lightblue',
+  theta = 30, phi = 30, expand = .75,
+  ticktype = 'detailed')
+
+library(rgl)
+persp3d(
+  x = pop_sds, y = sample_sizes, z = sim_output_3,
+  col = 'lightblue',
+  alpha = 0.6,
   theta = 30, phi = 30, expand = .75,
   ticktype = 'detailed')
 
