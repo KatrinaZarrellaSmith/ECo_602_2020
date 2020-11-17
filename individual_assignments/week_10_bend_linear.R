@@ -1,13 +1,20 @@
 #Lab 10: Bending the Linear Model
 
+rm(list = ls()) #clear workspace
+
 #understand the statistical power of experiments in relation to varying sample size and error rates
 #explore the possibility that the standard errors among replicates in extended experiments might vary from the first experiment
 
 #rope and blade data
-rope = read.csv("rope.csv")
+require(here)
+
+rope = read.csv(here("data","rope.csv"))
+rope$rope.type = factor(rope$rope.type)
+
 class(rope$rope.type) #factor
 #when we use a categorical predictor, we can also think if it as a grouping factor
 levels(rope$rope.type)
+
 #total number of observations
 n_obs = length(rope$rope.type)
 #number of groups (rope types)
@@ -23,9 +30,10 @@ n_groups = length(levels(rope$rope.type))
 #the squared deviation of each observation from the overall mean
 
 #deterministic model of the percent rope cut is the mean rope cut (of all observations)/the grand mean
-mean(rope$p.cut)
+grand_mean = mean(rope$p.cut)
 
-ss_tot = sum((rope$p.cut - mean(rope$p.cut))^2)
+ss_tot = sum((rope$p.cut - grand_mean)^2)
+df_tot = n_obs - 1
 
 #----SSE----
 #calculate the sums of squares within groups (rope types)
@@ -47,15 +55,6 @@ aggregate(
   by = list(rope$rope.type),
   FUN = function(x) mean(x))
 
-#Calculate the group SS/within group residuals
-agg_resids = aggregate(
-  x = rope$p.cut,
-  by = list(rope$rope.type),
-  FUN = function(x) (x - mean(x)))
-
-#test
-str(agg_resids)
-
 #calculate the squared residuals
 agg_sq_resids = aggregate(
   x = rope$p.cut,
@@ -66,7 +65,8 @@ agg_sq_resids = aggregate(
 str(agg_sq_resids)
 
 #Sum the group SSs
-ss_within = agg_sq_resids$x
+ss_within = sum(agg_sq_resids$x)
+df_within = n_obs - n_groups
 
 #----SSA----
 #calculate the "sums of squares among"/SSA
@@ -74,7 +74,8 @@ ss_among = ss_tot - ss_within
 #The extent to which ss_within is less than ss_tot is a reflection of the magnitude of the differences between the means.
 #If ss_within is much smaller than ss_tot, then most of the variation in the response is due to differences among groups (or levels of the independent factor).
 #Another way of looking at this is that as the ratio of ss_among to ss_within increases, then an increasing amount of the variation is due to differences among groups.
-
+df_among = n_groups - 1
+  
 #----Normalize----
 #can't compare the sums of squares directly because the numbers of groups are different than the total number of observations
 #ex. larger samples will have larger sums of squared residuals, even if the variance is the same
@@ -91,12 +92,12 @@ df_tot = n_obs - 1
 df_within = n_obs - n_groups
 
 #mean squares are obtained simply by dividing each sum of squares by its respective degrees of freedom
-ms_among  =  ss_among / (n_groups - 1)
-ms_within = ss_within / (n_obs - n_groups)
+ms_among  =  ss_among / df_among
+ms_within = ss_within / df_within
 
 #----F test----
 #F-ratio, defined as the among-group variance divided by the within-group variance
-f_ratio = ms_among/ms_within
+f_ratio = ms_among / ms_within
 #null=treatment means are all the same (accept when number is small)
 #alternative=at least one of the means is significantly different from the others (accept when number is big)
 
@@ -105,11 +106,38 @@ f_ratio = ms_among/ms_within
 
 #use pf() for cumulative probabilities of the F distribution
 #In our case the numerator was the among-group variance and the denominator was the within-group variance
-f_pval = 1-pf(f_ratio, (n_groups - 1), (n_obs - n_groups), lower.tail = FALSE) #P[X > x]
+f_pval = pf(q = f_ratio, df1 = df_among, df2 =  df_within, lower.tail = FALSE) #P[X > x]
+
+#----Test----
+{
+# number comparison tolerance
+digits_check = 5
+
+# Build the reference model using R functions
+fit_1 = lm(p.cut ~ rope.type, data=rope)
+anova(fit_1)
+anova_fit_1 = anova(fit_1)
+
+# Check degrees of freedom
+anova_fit_1$Df == c(df_among, df_within)
+
+# Check sums of squares
+round(anova_fit_1$`Sum Sq`, digits = digits_check) == round(c(ss_among, ss_within), digits = digits_check)
+
+# Check mean squares
+round(anova_fit_1$`Mean Sq`, digits = digits_check) == round(c(ms_among, ms_within), digits = digits_check)
+
+# Check the F-ratio
+round(anova_fit_1$`F value`[1], digits = digits_check) == round(f_ratio, digits = digits_check)
+
+# Check the F test statistic p-value
+round(anova_fit_1$`Pr(>F)`[1], digits = digits_check) == round(f_pval, digits = digits_check)
+}
 
 #----ANOVA----
-fit_1 = lm(p.cut ~ rope.type, data=rope)
+fit_1 = lm(p.cut ~ rope.type, data=rope) #fitted model object
 anova_fit_1 = anova(fit_1)
 str(anova_fit_1)
 
-anova_fit_1$`Sum Sq`
+anova_fit_1$`Pr(>F)` #extract p-value
+anova_fit_1$`Sum Sq` #extract SS
