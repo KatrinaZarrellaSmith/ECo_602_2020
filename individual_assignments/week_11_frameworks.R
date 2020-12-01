@@ -41,7 +41,7 @@ linear(x = 3:5, y_int = -1, slope = 0.01) #test=-0.97,-0.96,-0.95
 
 #Stochastic Model: Normal Distribution
 #normally-distributed errors
-rnorm()
+#use rnorm()
 
 # ----Simulation Function----
 #deterministic and stochastic functions into a single data simulator
@@ -118,6 +118,20 @@ points(
   ),
   col = adjustcolor("red", alpha = 0.3),
   pch = 16)
+
+#alternate
+plot(
+  x = birdhab$ls, 
+  y = linear_simulator(
+    x = birdhab$ls,
+    y_int = int_obs,
+    slope = slope_obs,
+    st_dev = sd_obs
+  ),
+  main = "Simulated Data",
+  xlab = "late-successional forest",
+  ylab = "Brown Creeper Abundance")
+
 #One problem with the use of the normal distribution is that it is unbounded on the lower limit
 #abundance cannot be negative
 
@@ -184,62 +198,78 @@ linear_sim_fit = function(x, y_int, slope, st_dev)
   alpha = 0.05
   n_sims = 10
   p_vals = numeric(n_sims)
-  effect_size = seq(-.01, .01, by = 0.001) #vector of slope values
-  effect_power = numeric(length(effect_size)) #storage vector to hold the results
   
-  for(j in 1:length(effect_size)) #loop over slope values
+  n_effect_sizes = 20
+  effect_sizes_1 = seq(-.01, .01, length.out = n_effect_sizes) #vector of slope values/sequence of effect sizes to try
+  
+  effect_size_powers = numeric(n_effect_sizes) #storage vector to hold the results/vector of statistical powers
+  
+  for(j in 1:n_effect_sizes) #loop over slope values/iterates over each of the effect sizes
   {
     for(i in 1:n_sims) #loop over simulations
     {
       fit_sim = linear_sim_fit(
         x = birdhab$ls,
         y_int = int_obs,
-        slope = effect_size[j], #power is computed for the first value of slope in effect_size
+        slope = effect_sizes_1[j], #power is computed for the first value of slope in effect_size
         st_dev = sd_obs
       )
-      
-      p_vals[i] = summary(fit_sim)$coefficients[2, 'Pr(>|t|)']
+      p_vals[i] = summary(fit_sim)$coefficients[2, 'Pr(>|t|)'] #p-values calculated for a specific effect size
     }
-    effect_power[j] = sum(p_vals < alpha) / n_sims #result is stored in the first position of the storage vector
+    effect_size_powers[j] = sum(p_vals < alpha) / n_sims #result is stored in the first position of the storage vector
   }
 }
+
 #Each time through the outer loop, a new value of power is computed for the next value of slope
 #result is a vector of power values for increasing values of slope
 
+#store results in data frame
+sim_effect_size = 
+  data.frame(
+    power = effect_size_powers,
+    effect_size = effect_sizes_1) #columns for effect size and statistical power
+
 #plot the result and add a vertical line to show the slope of our original data set
-plot(effect_size, effect_power, type = 'l', 
-     xlab = 'Effect size', ylab = 'Power')
-abline(v = coef(fit_1)[2], 
-       lty = 2, col = 'red')
+plot(power ~ effect_size, data = sim_effect_size,
+  type = 'l', xlab = 'Effect size', ylab = 'Power')
+abline(v = coef(fit_1)[2], lty = 2, col = 'red')
 
 #same thing for a gradient in sample sizes
 {
-  alpha = 0.05
-  n_sims = 100
-  p_vals = numeric(n_sims)
-  sample_sizes = seq(5, 50)
-  sim_output_1 = numeric(length(sample_sizes))
-  for(j in 1:length(sample_sizes))
+alpha = 0.05
+n_sims = 1000
+p_vals = numeric(n_sims)
+
+sample_sizes = seq(5, 100)
+sample_size_powers = numeric(length(sample_sizes))
+
+for(j in 1:length(sample_sizes))
+{
+  x_vals = seq(0, 100, length.out = sample_sizes[j])
+  
+  for(i in 1:n_sims)
   {
-    x_vals = seq(0, 100, length.out = sample_sizes[j])
-    
-    for(i in 1:n_sims)
-    {
-      fit_sim = linear_sim_fit(
-        x = x_vals,
-        y_int = int_obs,
-        slope = slope_obs,
-        st_dev = sd_obs
-      )
-      p_vals[i] = summary(fit_sim)$coefficients[2, 'Pr(>|t|)']
-    }
-    sim_output_1[j] = sum(p_vals < alpha) / n_sims
+    fit_sim = linear_sim_fit(
+      x = x_vals,
+      y_int = int_obs,
+      slope = slope_obs,
+      st_dev = sd_obs
+    )
+    p_vals[i] = summary(fit_sim)$coefficients[2, 'Pr(>|t|)']
   }
+  sample_size_powers[j] = sum(p_vals < alpha) / n_sims
 }
 
-plot(sample_sizes, sim_output_1,  type = 'l', 
-     xlab = 'Sample size', ylab = 'Power')
+sim_sample_size = 
+  data.frame(
+    power       = sample_size_powers,
+    sample_size = sample_sizes)
+
+plot(
+  power ~ sample_size, data = sim_sample_size,
+  type = 'l', xlab = 'Sample size', ylab = 'Power')
 abline(v = nrow(birdhab), lty = 2, col = 'red')
+}
 
 # ----Q1----
 #Population Dispersion Analysis
@@ -249,15 +279,15 @@ abline(v = nrow(birdhab), lty = 2, col = 'red')
 c(sd_obs, sd_obs*7)
 #suggest starting at the observed standard deviation up to 3 times the observed standard deviation
   alpha = 0.05
-  n_sims = 5
+  n_sims = 5000
   p_vals = numeric(n_sims)
   
  # What was the observed standard deviation?
   sd_obs
   
  # Specify the number of different standard deviation values to simulate:
-  n_sds = 100
-  pop_sds = seq(from = sd_obs, to = sd_obs*7, length.out = n_sds)  #vector of SD values
+  n_sds = 20
+  pop_sds = seq(from = 0.01, to = 1.5, length.out = n_sds)  #vector of SD values
   pop_sd_power = numeric(length(pop_sds)) #storage vector to hold the results
   
   for(j in 1:length(pop_sds)) #loop over slope values
@@ -280,63 +310,96 @@ c(sd_obs, sd_obs*7)
 #Each time through the outer loop, a new value of power is computed for the next value of slope
 #result is a vector of power values for increasing values of slope
 
-#plot the result and add a vertical line to show the slope of our original data set
+#data frame of results  
+  sim_output_dispersion = data.frame(
+    sd = pop_sds,
+    power = pop_sd_power)
+  
+# save your simulation results so you don't have to run it every time.
+  save(
+    sim_output_dispersion, 
+    file = here::here("data", "lab_ll_dat_dispersion_sim.RData")) 
+
+  #load data again
+  load(file = here::here("data", "lab_ll_dat_dispersion_sim.RData"))
+  
+png(filename = here::here("figures", "lab_11_lineplot.png"), 
+      width = 1000, #pixels wide
+      height = 800, #pixels high
+      res = 180, #dpi (pixels/inch)
+      bg = "transparent")
+#plot the result and add a vertical line to show the SD of our original data set
   plot(pop_sds, pop_sd_power, type = 'l', 
-       xlab = 'Population Standard Deviation', 
-       ylab = 'Power')
-  abline(v = sd_obs, lty = 2, col = 'red')
+       lwd = 2,
+       xlab = 'Population Dispersion', 
+       ylab = 'Statistical Power',
+       main = "Line Plot of Statistical Power")
+  abline(v = sd_obs, lty = 2, col = 'red', lwd = 2)
+dev.off()
 
-  
-# ----Combinations----
-
-#vary combinations of parameters, slope and sample size
-{
-  alpha = 0.05
-  n_sims = 10
-  p_vals = numeric(n_sims)
-  effect_sizes = seq(-.01, .01, by = 0.001)
-  sample_sizes = seq(10, 50)
-  sim_output_2 = matrix(nrow = length(effect_sizes), ncol = length(sample_sizes))
-  
-  for(k in 1:length(effect_sizes))
+# ----Bivariate Power----
+#Bivariate Power Analysis
+#vary combinations of parameters, slope and sample size  
+#set n_sims and n_effect_sizes to small values as you are experimenting with the code
   {
-    effect_size = effect_sizes[k]
-    for(j in 1:length(sample_sizes))
+    alpha = 0.01
+    n_sims = 50
+    
+    p_vals = numeric(n_sims)
+    
+    n_effect_sizes = 20
+    effect_sizes = seq(-.01, .01, length.out = n_effect_sizes)
+    sample_sizes = seq(10, 50)
+    
+    sim_output_2 = matrix(nrow = length(effect_sizes), ncol = length(sample_sizes))
+    
+    for(k in 1:length(effect_sizes))
     {
-      x_vals = seq(0, 100, length.out = sample_sizes[j])
-      
-      for(i in 1:n_sims)
+      effect_size = effect_sizes[k]
+      for(j in 1:length(sample_sizes))
       {
-        fit_sim = linear_sim_fit(
-          x = x_vals,
-          y_int = int_obs,
-          slope = effect_size,
-          st_dev = sd_obs
-        )
-        p_vals[i] = summary(fit_sim)$coefficients[2, 'Pr(>|t|)']
+        x_vals = seq(0, 100, length.out = sample_sizes[j])
+        
+        for(i in 1:n_sims)
+        {
+          fit_sim = linear_sim_fit(
+            x = x_vals,
+            y_int = int_obs,
+            slope = effect_size,
+            st_dev = sd_obs
+          )
+          p_vals[i] = summary(fit_sim)$coefficients[2, 'Pr(>|t|)']
+        }
+        sim_output_2[k, j] = sum(p_vals < alpha) / n_sims
       }
-      sim_output_2[k, j] = sum(p_vals < alpha) / n_sims
+      print(paste0("computing effect size ", k," of ", length(effect_sizes)))
     }
+    
+    sim_n_effect_size = 
+      list(
+        power = sim_output_2,
+        effect_size = effect_sizes,
+        sample_size = sample_sizes
+      )
   }
-}
 
-#plot a matrix as if it were raster data, that is to plot a grid in which the pixel color is determined by the value of the matrix element
-image(sim_output_2)
-
+#plot a matrix as if it were raster data, that is to plot a grid in which the pixel color is determined by the value of the matrix element  
+image(sim_n_effect_size$power)
+#save your simulation output to a file
 
 # ----Q2----
 #Population Dispersion and Sample Size Analysis
 #Could we improve our statistical power with larger sample sizes?
 #modify simulation of population standard deviation to include sample size
-alpha = 0.05 #rerun with 0.01, name output
-n_sims = 10
+alpha = 0.05 #rerun with 0.01, name output to overlay plots with transparency
+n_sims = 1500
 p_vals = numeric(n_sims)
-n_sds = 10
+n_sds = 60
 # you can use the values you chose in the last simulation as a guide for what to choose here
-pop_sds = seq(from = sd_obs, to = sd_obs*7, length.out = n_sds)  #vector of SD values
+pop_sds = seq(from = 0.05, to = 1.5, length.out = n_sds)  #vector of SD values
 
-# These were the sample sizes in the walkthrough simulation.  you may want to try a different range.
-sample_sizes = seq(5, 50)
+# sample sizes
+sample_sizes = seq(5, 100)
 
 sim_output_3 = matrix(nrow = length(pop_sds), ncol = length(sample_sizes))
 
@@ -358,26 +421,57 @@ for(k in 1:length(pop_sds))
     }
     sim_output_3[k, j] = sum(p_vals < alpha) / n_sims
   }
+  print(paste0("Testing standard deviation ", k, " of ", n_sds))
 }
+
 image(sim_output_3)
+
+#save to data frame
+sim_3_dat = 
+  list(
+    power = sim_output_3,
+    sample_size = sample_sizes,
+    pop_sd = pop_sds)
+
+#save results
+save(
+  sim_3_dat, 
+  file = here::here("data", "lab_ll_sim_output_dispersion_n_1000.RData"))
 
 
 # ----Contour----
 #[iso]lines show interpolated lines at which the value is the same
-contour(x = effect_sizes, y = sample_sizes, z = sim_output_2,
+contour(x = effect_sizes, y = sample_sizes, 
+        z = sim_output_2, #matrix in which cells represent the values for which to create the contours
         xlab = "effect size",
         ylab = "sample size",
         main = "Contour Plot of Statistical Power")
 
+png(filename = here::here("figures", "lab_11_contourplot.png"), 
+    width = 1200, #pixels wide
+    height = 800, #pixels high
+    res = 180, #dpi (pixels/inch)
+    bg = "transparent")
+#Q2 [iso]lines show interpolated lines at which the value is the same
+contour(x = pop_sds, y = sample_sizes, 
+        z = sim_output_3, #matrix in which cells represent the values for which to create the contours
+        xlab = "Population Dispersion",
+        ylab = "Sample Size",
+        main = "Contour Plot of Statistical Power")
+dev.off()
+
 # ----3D----
 #static perspective plot
 persp(
-  x = effect_sizes, y = sample_sizes, z = sim_output_2,
+  x = sim_n_effect_size$effect_size,
+  y = sim_n_effect_size$sample_size,
+  z = sim_n_effect_size$power,
+  xlab = "beta", ylab = "n", zlab = "power",
   col = 'lightblue',
   theta = 30, phi = 30, expand = .75,
   ticktype = 'detailed')
 
-#static perspective plot
+#Q2 static perspective plot
 persp(
   x = pop_sds, y = sample_sizes, z = sim_output_3,
   col = 'lightblue',
@@ -385,7 +479,7 @@ persp(
   ticktype = 'detailed')
 
 #interactive plot
-install.packages("rgl")
+#install.packages("rgl")
 library(rgl)
 persp3d(
   x = effect_sizes, y = sample_sizes, z = sim_output_2,
@@ -393,19 +487,42 @@ persp3d(
   theta = 30, phi = 30, expand = .75,
   ticktype = 'detailed')
 
-library(rgl)
+#save the linked 3D plot
+rgl::writeWebGL(
+  dir = here::here("docs", "webGL"), 
+  filename = here::here(
+    "docs", "webGL",
+    "n_effect_size_power_sim_plot.html"),
+  width = 1200, height = 1200
+)
+
+{
+#Q2
 persp3d(
   x = pop_sds, y = sample_sizes, z = sim_output_3,
-  col = 'lightblue',
+  col = 'lightgoldenrod3',
+  xlab = 'Population Dispersion',
+  ylab = 'Sample Size',
+  zlab = 'Statistical Power',
   alpha = 0.6,
   theta = 30, phi = 30, expand = .75,
   ticktype = 'detailed')
 
+#save the linked 3D plot
+rgl::writeWebGL(
+  dir = here::here("docs", "webGL"), 
+  filename = here::here(
+    "docs", "webGL",
+    "n_effect_size_power_sim_plot2.html"),
+  width = 1200, height = 800
+)
+}
+
 # ----Save----
 #save the results of my effect size and sample size simulation to a file
 save(
-  sim_output_2, 
-  file = here::here("data", "sample_size_effect_size_power_sim.Rdata"))
+  sim_n_effect_size,
+  file = here::here("data", "lab_11_n_effect_sizes.Rdata"))
 
 #load data again
-load(file = here::here("data", "sample_size_effect_size_power_sim.Rdata"))
+load(file = here::here("data", "lab_11_n_effect_sizes.Rdata"))

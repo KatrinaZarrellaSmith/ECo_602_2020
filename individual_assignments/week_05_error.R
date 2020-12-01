@@ -222,6 +222,14 @@ curve(
 dev.off()
 }
 
+# ----Q4: Ricker parameters----
+#how the alpha parameter influences the curve shape
+#a parameter influences the initial slope
+
+#how the beta parameter influences the curve shape
+#b parameter controls the x-coordinate of the curve's maximum
+
+
 # ----Q5: Scatterplot-----
 dat_dispersal = read.csv("salamander_dispersal.csv")
 {
@@ -345,7 +353,13 @@ dev.off()
 
 # ----Q9: Linear Residuals----
 #calculate residuals
-  resids_linear = dat_dispersal$disp.rate.ftb - line_point_slope(x, x1, y1, slope)
+  resids_linear = 
+    line_point_slope(
+      dat_dispersal$dist.class, 
+      param_x1, param_y1,
+      param_slope) - 
+    dat_dispersal$disp.rate.ftb
+  
 {
 #save image to png file
   png(filename = "lab_05_linear_res.png", 

@@ -201,7 +201,7 @@ dev.off()
 
 # ----Q2----
 #calculate a 95% Confidence interval on the difference in mean flipper lengths
-quantile(pen_boot$t, 0.025)
+quantile(pen_boot$t, c(0.025, 0.975))
 
 # ----Q3----
 #Create a distribution function from pen_boot using ecdf()
