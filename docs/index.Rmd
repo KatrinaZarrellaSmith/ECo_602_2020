@@ -17,9 +17,6 @@ knitr::opts_chunk$set(message = FALSE)
 options(knitr.duplicate.label = TRUE)
 ```
 
-Everything above this line is the header.
-
-
 <!-- The following text won't be displayed in your document.  It tells R how to make nicer looking buttons for your tabbed content. -->
 
 <style type="text/css" rel="stylesheet">
@@ -37,281 +34,790 @@ Everything above this line is the header.
 }
 </style>
 
-
-Use this document as a template to build your final project.
-
-If you've already created the file index.Rmd in your docs folder, you can paste everything below the header into that document.
-
-If you don't yet have an index.Rmd file, save this document as index.Rmd in the docs folder of your main class folder.
-
-Edit this template to fill in your own content.
-
-
 # Introduction
 
-Type a brief introduction here.
+Basic R components serve as foundational to advanced programming concepts. The following guide is a general overview of the components utilized in base R programming and frequentist statistics.
+
+# RStudio Help
+
+For any functions, put your cursor on the function in the console and press `F1` to get you to the help file of the function, or type `?` before the function argument in the console.
+
+- If the complete function name is unknown, type `??` before the partial word in the console.
+
+# R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+Create a file named index.Rmd in your documents folder. Add text below the header. When you click the **Knit** button, a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. 
+
+## Headers and Tabs
+
+Header size is denoted by the number of `#` used before the text.
+
+- `#` Large
+
+- `##` Medium
+
+- `###` Small
+
+Insert `{.tabset .tabset-pills}` after the header title to turn them into tabs.
+
+## Code Chunks {.tabset .tabset-pills}
+
+You can embed an R code chunk using shortcuts:
+
+- For Windows: ctrl + alt + i
+
+- For Mac: command + option + i
+
+Best practice is to give the chunk a name, it will appear in the navigation pane, using underscores for spaces. Be sure to always start the name with 'r'.
+
+```{r code_chunk}
+
+# This is my new code chunk
+
+# Clear workspace
+rm(list = ls())
+
+```
+
+You can comment large sections of text using shortcuts:
+
+- Highlight all the chunk of code you want to comment: 
+shift + ctrl + c
+
+- To uncomment, highlight all the chunk of code you want to uncomment: shift + ctrl + c
+
+## Including Plots {.tabset .tabset-pills}
+
+To embed a plot, add it to your code chunk. Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot. Use `fig.asp = ` to customize the size of the plot.
+
+Here's an example with a penguins demo data set:
+```{r penguins, echo=FALSE}
+
+# If not installed, install penguins data set using install.packages('palmerpenguins')
+
+# Load the penguins package
+require(palmerpenguins)
+
+# Create a plot
+hist(penguins$flipper_length_mm)
+
+```
 
 
 # Functions 1: Data Structure Functions {.tabset .tabset-pills}
-
-Look at the source code for the final project template, you'll notice the text:
-
-{.tabset .tabset-pills}
-
-This creates tabbed content for all the following sections that are one-level below.
-
-- If you include them on a primary header (one #), all of the subsequent secondary headers will in tabs.
-
-
-
-
 ## `c()` {.tabset .tabset-pills}
 
-The following is the markdown text needed to reproduce my code example for `c()`:
-
+**Vectors**
 
 The function `c()` *combines* or *concatenates* its arguments into a vector (a 1-dimensional data structure consisting of 1 or more elements).
 
-- All of the elements must be of the same *type*.
-  - I can't combine character and numeric types in the same call to `c()`
+- All of the elements must be of the same type, i.e. character and numeric types can be combined in the same call to `c()` but the vector type will be character. head()
 
-Here's two examples using numeric and character data types:
+Here's some examples using numeric and character data types:
 
 ```{r}
-# Create a vector of numbers:
-num_vec  = c(1, 4, 8, 9, 13)
+# Create a vector of numbers
+num_vec  = c(1, 4, 8, 9, 15)
 
-# Create a vector of characters:
-char_vec = c("a", "fish", "data is cool")
+# Create a vector of characters
+char_vec = c('a', 'fish', 'data is cool')
+
+# Create a vector of characters that includes numbers as characters
+mixed_vec = c('A', 'Z', 1, 16)
+
 ```
 
-I can show the contents of a vector by typing the name of the vector, or using the `print()` function.
+I can view the contents of a vector by typing the name of the vector, or using the `print()` function.
 
 ```{r}
-# Typing the name of the vector into the console prints the contents
+# Type the name of the vector into the console to print the contents
 num_vec
 
-# The print() function accomplishes the same task:
+# The print() function accomplishes the same task
 print(char_vec)
+```
+
+
+## `matrix()` {.tabset .tabset-pills}
+
+**Matrices**
+
+A matrix is a two-dimensional data structure. Creating a matrix can be done with the function `matrix()` by specifying the elements to fill it with, number of rows(`nrow`), and number of columns (`ncol`).
+
+- If either the number of rows *or* columns is specified, the other dimension argument is not needed.
+
+- The matrix is populated by column as default. Use argument `byrow = TRUE` to populate elements by row.
+
+- You can name the rows and/or columns with `dimnames`.
+
+- You can repeat values in a matrix by supplying them in the first argument, then specifying the dimensions of the matrix.
+
+Here's some examples using numeric and character data types:
+
+```{r matrix}
+
+# Create a 4x4 matrix populated by column
+matrix(1:16, nrow = 4)
+
+# Create a 4x4 matrix populated by row
+my_matrix1 = matrix(1:16, nrow = 4, byrow = TRUE)
+
+# Name the rows and columns
+my_matrix2 = matrix(1:16, nrow = 4, dimnames = list(c('R1', 'R2', 'R3', 'R4'), c('C1', 'C2', 'C3', 'C4')))
+
+# Create a 4x5 matrix populated by row with recyled values
+my_matrix3 = matrix(c(1, 16), nrow = 4, ncol = 5)
+
+# Character and numeric variables can be mixed
+my_matrix4 = matrix(c('A', 'Z', 1, 16), nrow = 4, ncol = 5)
+
 ```
 
 
 ## `data.frame()` {.tabset .tabset-pills}
 
-Creating a data frame can be done with the function `data.frame()`. Assign each column a variable name 
-each column can contain a vector of any variable type
+**Data Frames**
 
-How to subset a data frame:
-- If I know the name of a column, I can use the $ symbol
+A data frame is a two-dimensional data structure. Creating a data frame can be done with the function `data.frame()`. Assign each column a variable name by typing the name `=` and the elements.
+
+- Variable names should not contain spaces and are case sensitive.
+
+- Each column can contain a vector of any variable type.
+
+Here's some examples using numeric and character data types:
 
 ```{r data_frame_example_1}
-# build a data frame from scratch
+# Build a data frame from scratch
 
-dat_1 = data.frame(letters = c("b", "w", "B"),
-           numbers_1 = c(34, 6, 123454))
+dat_1 = data.frame(letters = c('b', 'w', 'B'), 
+                   numbers_1 = c(34, 6, 123454))
 
-# I can print the contents by typing the name of the data frame
+# Print the contents by typing the name of the data frame
 dat_1
 
-# Subset a column by name
+```
+
+Subsets can be used to view, utilize, or discard specific segments of the data frame. Subset a data frame by using operators. You can combine a subset operator with a condition statement to select the specific segments of the data frame.
+
+There are three ways to do this:
+
+- Use the `$` symbol. R Studio auto-populates the variable names which you can use as a drop-down menu to select the variable of interest. Alternately, if the name of a column is known, it can be typed after the `$`.
+
+```{r data_frame_subsetting_1}
+
+# Subset a column by variable name
 dat_1$letters
 
 ```
 
-Type your data frame example here.
+- Use the `[]` indexing operator to select specific segments of the data. The first argument denotes the rows and the second denotes the columns. 
 
-## `matrix()` {.tabset .tabset-pills}
+```{r data_frame_subsetting_2}
 
-```{r}
+# Select the 'letters' column
+dat_1[,'letters']
+
+# Select the first 2 elements from the 'letters' column
+dat_1[1:2, 'letters']
+
+# Select elements greater than 6 from 'numbers_1' variable
+dat_1[dat_1$numbers_1 > 6, 'numbers_1']
+
+# Select elements greater than 6 from 'numbers_1' variable and return 'letters' elements
+dat_1[dat_1$numbers_1 > 6, 'letters']
+
+# Select rows and columns that includes elements greater than 6 from 'numbers_1' variable
+dat_1[dat_1$numbers_1 > 6,]
 
 ```
 
-Type your matrix example here.
+- Use the `subset()` function to select specific segments of the data.
+
+```{r data_frame_subsetting_3}
+
+# Select rows and columns that includes elements greater than 6 from 'numbers_1' variable
+subset(dat_1, subset = numbers_1 > 6)
+
+# Name the subset to store it as a data frame
+
+my_subset = subset(dat_1, subset = numbers_1 > 6)
+
+print(my_subset)
+
+```
 
 
 ## `length()` {.tabset .tabset-pills}
 
-```{r}
+**Counting with `length()`**
+
+The `length()` function can be used with vectors to count the number of elements. When combined with subsetting a data frame, it can count the total observations that meet the subset conditions.
+
+- `length()` can be used on either numeric and character data types.
+
+Here's some examples using vector and data frame types:
+
+```{r length}
+
+# View
+num_vec 
+
+# Count the number of elements in the vector 'num_vec'
+length(num_vec)
+
+# View
+char_vec
+
+# Count the number of elements in the vector 'char_vec'
+length(char_vec)
+
+# View
+dat_1$letters
+
+# Count the number of elements in the subsetted vector
+length(dat_1$letters)
 
 ```
 
 
 ## `nrow()` {.tabset .tabset-pills}
 
-```{r}
+**Counting with `nrow()`**
+
+The `nrow()` function can be used with matrices or data frames to count the number of rows.
+
+- The `nrow()` argument does not count the row with column headers.
+
+Here's some examples using data frame and matrix types:
+
+```{r nrow}
+
+# View
+dat_1
+
+# Count the number of rows
+nrow(dat_1)
+
+# View
+my_matrix4
+
+# Count the number of rows in a matrix with headers
+nrow(my_matrix4)
 
 ```
 
 
 ## `ncol()` {.tabset .tabset-pills}
 
+**Counting with `ncol()`**
+
+The `ncol()` function can be used with matrices or data frames to count the number of columns.
+
+- The `ncol()` argument does not count the column with row headers.
+
+Here's some examples using data frame and matrix types:
+
 ```{r}
+
+# View
+dat_1
+
+# Count the number of columns
+ncol(dat_1)
+
+# View
+my_matrix4
+
+# Count the number of columns in a matrix with headers
+ncol(my_matrix4)
 
 ```
 
 ## `dim()` {.tabset .tabset-pills}
 
+**Counting with `dim()`**
+
+The `dim()` function can be used with matrices or data frames to count the number of columns and rows or *dimensions*.
+
+- The `dim()` argument does not count the row or column headers.
+
+Here's some examples using data frame and matrix types:
+
 ```{r}
+
+# View
+my_matrix1
+
+# Dimensions of a matrix
+dim(my_matrix1)
+
+# View
+my_matrix2
+
+# Dimensions of a matrix that has row and column headers
+dim(my_matrix2)
+
+# View
+dat_1
+
+# Dimensions of a data frame that has column headers
+dim(dat_1)
 
 ```
 
-# Functions 2: Numerical Data Exploration  {.tabset .tabset-pills}
+# Functions 2: Numerical Data Exploration {.tabset .tabset-pills}
+
+## `head()`
+
+**Previewing a data frame with `head()`**
+
+Use the head() function to print the first few lines of a data frame.
+
+Here's an example with a penguins demo data set:
+```{r head}
+
+# If not installed, install penguins data set using install.packages('palmerpenguins')
+
+# Load the penguins package
+require(palmerpenguins)
+
+head(penguins)
+
+```
+
 
 ## `summary()` {.tabset .tabset-pills}
 
+**Previewing a data frame with `summary()`**
+
+The `summary()` function is useful in checking data that you have read into RStudio as well as getting a general overview of the data. It will list all variables and give summary statistics for numeric variables.
+
+- If the variable type is numeric, it will return the minimum, 1st quartile, median, mean, 3rd quartile, and maximum.
+
+- If the variable type is character, it will return counts for the number of times each element appears in the variable.
+
 ```{r}
+
+# View the summary for a data frame
+summary(dat_1)
 
 ```
 
 ## `mean()` {.tabset .tabset-pills}
 
+**Summary statistics**
+
+The mean is calculated by adding up all the numbers and dividing that by the total number of values. Calculating the mean can be done with `mean()` for numeric vectors.
 
 ```{r}
+
+# Calculate the mean
+mean(c(2,4,6))
+
+# View
+dat_1$numbers_1
+
+# Calculate the mean of a subsetted vector from a data frame
+mean(dat_1$numbers_1)
 
 ```
 
 ## `sd()` {.tabset .tabset-pills}
 
+**Summary statistics**
+
+The standard deviation is calculated by the square root of a variable's variance. Calculating the standard deviation can be done with `sd()` for numeric vectors.
+
 ```{r}
 
-```
+# Calculate the standard deviation
+sd(c(2,4,6))
 
- 
+# View
+dat_1$numbers_1
+
+# Calculate the mean of a subsetted vector from a data frame
+sd(dat_1$numbers_1)
+
+```
 
 
 # Functions 3: Graphical Data Exploration {.tabset .tabset-pills}
 
-See the final project description for a list of the required functions.
+## `plot()` {.tabset .tabset-pills}
 
-## `plot()`
+**Scatterplots**
 
-I can use `plot()` to create scatterplots.
+Scatterplots can be created using `plot()` for continuous data.
 
+Here's an example with a penguins demo data set:
 ```{r scatterplot_1, fig.asp=0.75}
-# load the penguins package:
+
+# If not installed, install penguins data set using install.packages('palmerpenguins')
+
+# Load the penguins package
 require(palmerpenguins)
 
-# Using formula notation:
-# The response variable is on the left side, followed by the tilde expression `~`, and then all the explanatory variables are on the right side.
-# I can use the `pch` argument to change the symbol.
-plot(bill_length_mm ~ body_mass_g, data = penguins,
-     pch = 16) 
+# Using formula notation, the response variable is on the left side, followed by the tilde expression `~`, and then all the explanatory variables are on the right side. The name of the data frame follows.
+plot(bill_length_mm ~ body_mass_g, data = penguins)
 
 ```
 
-## `boxplot()`
+- There are many arguments which can be used to customize the aesthetics of the plot.
 
-## `hist()`
+```{r plot_aesthetics, fig.asp=0.75}
 
-## `par()` and `mfrow=`
+plot(bill_length_mm ~ body_mass_g, data = penguins,
+     col = 'lightblue3', # Change the color of the symbol
+     pch = 2, # Change the shape of the symbol
+     cex = 1, # Change the size of the symbol
+     main = 'Scatterplot of penguin \nbody mass to bill length', # Add a plot title; split the title into two lines with the '\n' argument
+     xlab = 'Body Mass (g)', # Customize the x-axis label
+     ylab = 'Bill Length (mm)', # Customize the y-axis label
+     xlim = c(2000, 7000), # Customize the x-axis with lower and upper limits
+     ylim = c(30, 60)) # Customize the y-axis with lower and upper limits
+```
+
+Colors can be called by name or hexadecimal code.
+
+- Named colors can be found using `colors()` or online images: <http://www.stat.columbia.edu/~tzheng/files/Rcolor.pdf>
+
+The most common `pch` arguments are:
+
+pch = 0, square
+
+pch = 1, circle
+
+pch = 2, triangle point up
+
+pch = 3, plus
+
+pch = 4, cross
+
+pch = 5, diamond
+
+pch = 6, triangle point down
+
+pch = 7, square cross
+
+pch = 8, star
+
+pch = 9, diamond plus
+
+pch = 10, circle plus
+
+pch = 11, triangles up and down
+
+pch = 12, square plus
+
+pch = 13, circle cross
+
+pch = 14, square and triangle down
+
+pch = 15, filled square
+
+pch = 16, filled circle
+
+pch = 17, filled triangle point-up
+
+pch = 18, filled diamond
+
+pch = 19, solid circle
+
+pch = 20, bullet (smaller circle)
+
+pch = 21, filled circle blue
+
+pch = 22, filled square blue
+
+pch = 23, filled diamond blue
+
+pch = 24, filled triangle point-up blue
+
+pch = 25, filled triangle point down blue
+
+## `hist()` {.tabset .tabset-pills}
+
+**Histograms**
+
+Histograms show the frequency of binned vector data. Histograms can be created using `hist()`.
+
+Here's an example with a penguins demo data set:
+```{r histogram, fig.asp=0.75}
+
+# If not installed, install penguins data set using install.packages('palmerpenguins')
+
+# Load the penguins package
+require(palmerpenguins)
+
+# Using subsetting notation, a vector from the data frame is called.
+hist(penguins$body_mass_g)
+
+```
+
+- There are many arguments which can be used to customize the aesthetics of the histogram.
+
+```{r histogram_aesthetics, fig.asp=0.75}
+hist(penguins$body_mass_g,
+     col = 'lightblue3', # Change the color of the bars
+     main = 'Histogram of penguin body mass', # Customize the plot title
+     xlab = 'Body Mass (g)', # Customize the x-axis label
+     ylab = 'Frequency', # Customize the y-axis label
+     xlim = c(2000, 7000), # Customize the x-axis with lower and upper limits
+     ylim = c(0, 50), # Customize the y-axis with lower and upper limits
+     breaks = 20) # Change the size of the bins to match your data
+
+```
+
+
+## `boxplot()` {.tabset .tabset-pills}
+
+**Boxplots**
+
+Boxplots can be created using `boxplot()` for continuous combined with categorical data.
+
+Here's an example with a penguins demo data set:
+```{r boxplot, fig.asp=0.75}
+
+# If not installed, install penguins data set using install.packages('palmerpenguins')
+
+# Load the penguins package
+require(palmerpenguins)
+
+# Create a simple boxplot
+boxplot(penguins$bill_length_mm,
+        xlab = 'Bill Length (mm)', # Add an x-axis label
+        horizontal = TRUE) # Rotate the boxplot
+
+# Using formula notation, the response variable is on the left side, followed by the tilde expression `~`, and then the categorical explanatory variable is on the right side. The name of the data frame follows.
+boxplot(bill_length_mm ~ species, data = penguins)
+
+# Multiple explanatory variables can be used by adding '*' between variable names
+boxplot(bill_length_mm ~ species*sex, data = penguins)
+
+```
+
+- There are many arguments which can be used to customize the aesthetics of the plot.
+
+```{r box_aesthetics, fig.width=10, fig.height=7}
+boxplot(bill_length_mm ~ sex*species, data = penguins,
+        col = 'lightblue3', # Change the color of the symbol
+        main = 'Boxplot of penguin bill length \nby species and sex', # Add a plot title; split the title into two lines with the '\n' argument
+        names = c('Adelie F', 'Adelie M',
+                  'Chinstrap F', 'Chinstrap M',
+                  'Gentoo F', 'Gentoo M'), #Customize the x-axis tick mark labels
+        xlab = 'Species and Sex', # Customize the x-axis label
+        ylab = 'Bill Length (mm)', # Customize the y-axis label
+        ylim = c(30, 60)) # Customize the y-axis with lower and upper limits
+
+```
+
+
+## `par()` and `mfrow =`
+
+**Multiple plots**
+
+Parameters for plots can be customized using the `par()` function. When combined with `mfrow =`, multiple plots can be printed in the plot window.
+
+- The number of rows and columns can be specified. The first number is for number of rows, and the second is for columns.
+
+```{r par}
+
+# Create a plot window with 6 plots
+par(mfrow = c(2,3))
+
+# If not installed, install penguins data set using install.packages('palmerpenguins')
+
+# Load the penguins package
+require(palmerpenguins)
+
+# Plot 1, top row
+hist(penguins$bill_length_mm,
+     main = NULL) # Remove the plot title
+
+# Plot 2, top row
+hist(penguins$bill_depth_mm,
+     main = NULL) # Remove the plot title
+
+# Plot 3, top row
+hist(penguins$flipper_length_mm,
+     main = NULL) # Remove the plot title
+
+# Plot 4, bottom row
+plot(bill_length_mm ~ body_mass_g, data = penguins)
+
+# Plot 5, bottom row
+plot(bill_depth_mm ~ body_mass_g, data = penguins)
+
+# Plot 6, bottom row
+plot(flipper_length_mm ~ body_mass_g, data = penguins)
+
+```
+
+(!) Reset the plot window after plotting
+
+```{r}
+
+dev.off()
+
+```
+
 
 # Functions 4: Distribution Functions {.tabset .tabset-pills}
 
-See the final project description for a list of the required functions.
+## Functions for normal distributions
 
+## `dnorm()` {.tabset .tabset-pills}
+
+The Probability Density Function, i.e. the height of the curve at `x`, can be calculated by `dnorm()` for normal distributions. It is the probability of the random variable `x` falling within a particular range of values, as opposed to taking on any one value.
+
+- The default settings are `mean = 0` and `sd = 1`.
+
+```{r dnorm}
+
+# The Probability Density Function for a normal distribution
+x = 5 # Set the value for x or call in the dnorm()
+dnorm(x, mean = 2, sd = 3)
+
+```
+
+## `pnorm()` {.tabset .tabset-pills}
+
+The Cumulative Density Function, i.e. the area under the curve left of `q`, can be calculated by `pnorm()` for normal distributions. It is the probability that a value of `q` or less is observed. Alternatively, it can be the area under the curve right of `q`, or the probability that a value of `q` or more is observed.
+
+- The default settings are `mean = 0`, `sd = 1`, and `lower.tail = TRUE` for a value of `q` or less.
+
+- Set `lower.tail = FALSE` for a value of `q` or more.
+
+```{r pnorm}
+
+#The Cumulative Density Function for a normal distribution
+q = 5 # Set the value for q or call in the pnorm()
+pnorm(q, mean = 2, sd = 3, lower.tail = FALSE)
+
+```
+
+## `qnorm()` {.tabset .tabset-pills}
+
+The quantile function, i.e. the `p` percentile, can be calculated by `qnorm` for normal distributions. Note, `p` is the decimal version of the percentage. It is the inverse function of the Cumulative Density Function.
+
+- The default settings are `mean = 0`, `sd = 1`, and `lower.tail = TRUE` for a value of `p` or less.
+
+- Set `lower.tail = FALSE` for a value of `p` or more.
+
+```{r qnorm}
+
+#The quantile function for a normal distribution
+p = 0.6 # Set the value for p or call in the qnorm()
+qnorm(p, mean = 2, sd = 3, lower.tail = FALSE)
+
+```
+
+## Functions for binomial distributions
+
+## `dbinom()` {.tabset .tabset-pills}
+The Probability Density Function can be calculated by `dbinom()` for binomial distributions. The number of successes `x` in a sample with a fixed number of trials (`size`) and an equal probability of success (`prob`) in every trial can be specified in `dbinom()`. `dbinom()` calculates the probability of having exactly `x` successes.
+
+- The `size` argument is the number of trials, which can be 0 or more.
+
+- The `prob` argument is the probability of success on each trial in decimal form.
+
+```{r dbinom}
+
+# The Probability Density Function for a binomial distribution
+x = 5 # Set the value for x or call in the dbinom()
+dbinom(x, size = 20, prob = 0.3)
+
+```
+
+## `pbinom()` {.tabset .tabset-pills}
+
+The Cumulative Density Function, i.e. the area to the left of `q`, can be calculated by `pbinom()` for binomial distributions. The number of successes `q` in a sample with a fixed number of trials (`size`) and an equal probability of success (`prob`) in every trial can be specified in `pbinom()`. `pbinom()` calculates the probability of having `q` or less successes. Alternatively, it can be the the probability of having `q` or more successes, or the area to the right of `q`.
+
+- The `size` argument is the number of trials, which can be 0 or more.
+
+- The `prob` argument is the probability of success on each trial in decimal form.
+
+- A default setting is `lower.tail = TRUE` for a value of `q` or less. Set `lower.tail = FALSE` for a value of `q` or more.
+
+
+```{r pbinom}
+
+#The Cumulative Density Function for a binomial distribution
+q = 5 # Set the value for q or call in the pbinom()
+pbinom(q, size = 20, prob = 0.3, lower.tail = FALSE)
+
+```
+
+## `qbinom()` {.tabset .tabset-pills}
+
+The quantile function, i.e. the `p` percentile, can be calculated by `qbinom` for binomial distributions. Note, `p` is the decimal version of the percentage. It is the inverse function of the Cumulative Density Function.
+
+- The `size` argument is the number of trials, which can be 0 or more.
+
+- The `prob` argument is the probability of success on each trial in decimal form.
+
+- A default setting is `lower.tail = TRUE` for a value of `q` or less. Set `lower.tail = FALSE` for a value of `q` or more.
+
+```{r qbinom}
+
+#The quantile function for a binomial distribution
+p = 0.6 # Set the value for p or call in the qbinom()
+qbinom(p, size = 20, prob = 0.3, lower.tail = FALSE)
+
+```
 
 
 # Functions 5: Other Functions {.tabset .tabset-pills}
 
-See the final project description for a list of the required functions.
+## Loading packages
 
+Packages must be installed using `install.packages()`.
 
+To load the package after installing, you can use either `libary()` or `require()`. The benefits of each are as follows:
 
+- `libary()` generates an error if the package is not installed whereas `require()` generates a warning. This means that if the package is loaded with `require()` without being installed, the error will occur when trying to use that package whereas `library()` will let you know immediately if there is an error.
 
-# Part 2: Data Anaylsis
+- `require()` is good for code that will be shared because you can check if the package is installed, and either load it if installed already, or install and load it if not.
 
-Your data analysis materials will go here.
-
-OLD STUFF
-
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
-
-```{r how to insert a code chunk}
-
-```
-# Here is a demonstration of how to use R Markdown
-
-## Making a new code chunk
-
-The shortcut key (on Windows) is Ctrl+Alt+i
-
-On Mac, Command+Option+i
-
-If I press this key combo, RStudio will insert a new code chunk.
-
-Best practice is to give the chunk a name, it will appear in the navigation pane.
-Be sure to always start the name with "r".
-
-Highlight all the chunk of code you want to comment:
-shift+ctrl+c
-
-To uncomment, highlight all the chunk of code you want to uncomment:
-shift+ctrl+c
-
-## Reading a csv file
-I'm going to read some data from a csv (comma-separated value) file
-
-```{r loading csv file}
-require(here)
-
-dat_birds = read.csv(here("data", "hab.sta.csv")) #class example of birds data
-
-```
-
-## Previewing a data frame
-
-I can use the head() functions to print the first few lines of a data frame.
-Here's an example with the birds data.
-
-```{r head() function}
-
-head(dat_birds)
-
-```
-
-## Demo plot
-
-I can use hist() to create a histogram:
-
-```{r simple plot}
-
-hist(dat_birds$aspect)
-
-```
-
-Notice the end of the plot does not quite look right.
-
-## How to customize a histogram
-
-I can add a title to the histogram by using main()
-
-Put cursor on the gunction and press F1 to get you to the help file of function.
-
-Notice the argument breaks() to change the size of the bins to match your data.
-
+Here's an example with the package 'here':
 ```{r}
 
-hist(dat_birds$aspect,
-     main = "Histogram of study site aspect",
-     breaks = 36)
+if (!require(here)) install.packages('here')
+library(here)
 
 ```
 
+
+## Reading a csv file
+Import data from a csv (comma-separated value) file into RStudio using `read.csv()`.
+
+- The working directory must be set to the location of the csv file on your computer using `setwd()`.
+
+```{r read_csv1}
+
+#dat_birds = read.csv('hab.sta.csv')
+
+```
+
+- Alternatively, use the package 'here' to skip setting a working directory.
+
+```{r read_csv2}
+
+# If not installed, install 'here' using install.packages('here')
+
+# Load the here package
+require(here)
+
+# Load a csv file with the first argument as the name of the folder where the csv file is stored and the second argument as the name of the file. 
+dat_birds = read.csv(here('data', 'hab.sta.csv'))
+
+# Troubleshooting here(), use the double colon to access the specific package then the specific function.
+dat_birds = read.csv(here::here('data', 'hab.sta.csv'))
+
+```
+
+
+# Part 2: Data Analysis
