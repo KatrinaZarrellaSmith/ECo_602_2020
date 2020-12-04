@@ -34,17 +34,17 @@ options(knitr.duplicate.label = TRUE)
 }
 </style>
 
-# Introduction
+# Introduction {.tabset .tabset-pills}
 
 Basic R components serve as foundational to advanced programming concepts. The following guide is a general overview of the components utilized in base R programming and frequentist statistics.
 
-# RStudio Help
+# RStudio Help {.tabset .tabset-pills}
 
 For any functions, put your cursor on the function in the console and press `F1` to get you to the help file of the function, or type `?` before the function argument in the console.
 
 - If the complete function name is unknown, type `??` before the partial word in the console.
 
-# R Markdown
+# R Markdown {.tabset .tabset-pills}
 
 This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
@@ -60,7 +60,9 @@ Header size is denoted by the number of `#` used before the text.
 
 - `###` Small
 
-Insert `{.tabset .tabset-pills}` after the header title to turn them into tabs.
+` {.tabset .tabset-pills}` creates tabbed content for all the following sections that are one-level below.
+
+- If you include them on a primary header (one #), all of the subsequent secondary headers will in tabs.
 
 ## Code Chunks {.tabset .tabset-pills}
 
@@ -88,12 +90,20 @@ shift + ctrl + c
 
 - To uncomment, highlight all the chunk of code you want to uncomment: shift + ctrl + c
 
+Use `eval=FALSE` to keep the code chunk from being evaluated (only display the code chunk).
+
 ## Including Plots {.tabset .tabset-pills}
 
-To embed a plot, add it to your code chunk. Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot. Use `fig.asp = ` to customize the size of the plot.
+To embed a plot, add it to your code chunk. Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot. 
+
+You can adjust the size of the plots on your rendered document using the following code chunk arguments:
+
+`fig.height=`,`fig.width=`
+
+You can adjust the aspect ratio using `fig.aspect=`.
 
 Here's an example with a penguins demo data set:
-```{r penguins, echo=FALSE}
+```{r penguins, echo=FALSE, fig.height=5, fig.width=7}
 
 # If not installed, install penguins data set using install.packages('palmerpenguins')
 
@@ -369,7 +379,7 @@ dim(dat_1)
 
 # Functions 2: Numerical Data Exploration {.tabset .tabset-pills}
 
-## `head()`
+## `head()` {.tabset .tabset-pills}
 
 **Previewing a data frame with `head()`**
 
@@ -770,7 +780,7 @@ qbinom(p, size = 20, prob = 0.3, lower.tail = FALSE)
 ```
 
 
-# Functions 5: Other Functions {.tabset .tabset-pills}
+# Functions 5: Other Functions
 
 ## Loading packages
 
@@ -796,19 +806,24 @@ Import data from a csv (comma-separated value) file into RStudio using `read.csv
 
 - The working directory must be set to the location of the csv file on your computer using `setwd()`.
 
-```{r read_csv1}
+```{r read_csv1, eval=FALSE}
 
-#dat_birds = read.csv('hab.sta.csv')
+dat_birds = read.csv('hab.sta.csv')
 
 ```
 
 - Alternatively, use the package 'here' to skip setting a working directory.
 
+```{r install_here, eval=FALSE}
+
+# If not installed, install 'here' 
+install.packages('here')
+
+```
+
 ```{r read_csv2}
 
-# If not installed, install 'here' using install.packages('here')
-
-# Load the here package
+# Load the 'here' package
 require(here)
 
 # Load a csv file with the first argument as the name of the folder where the csv file is stored and the second argument as the name of the file. 
@@ -821,3 +836,401 @@ dat_birds = read.csv(here::here('data', 'hab.sta.csv'))
 
 
 # Part 2: Data Analysis
+
+The following is analysis on data collected on two species of small mammals in the Atlantic forests of Brazil.
+
+First, let's load the data:
+```{r get_data}
+
+# Load the 'here' package
+require(here)
+
+# Upload the data
+dat_delomys = read.csv(here("data", "delomys.csv"))
+
+```
+
+# Numerical Exploration
+
+Now I will explore basic statistics for the data:
+```{r number_explore}
+
+# Display summary statistics for body mass
+summary(dat_delomys$body_mass) 
+
+# Display summary statistics for body length
+summary(dat_delomys$body_length)
+
+# Test body mass and body length for normality.
+shapiro.test(dat_delomys$body_mass)
+
+shapiro.test(dat_delomys$body_mass)
+
+```
+The null hypothesis for the Shapiro-Wilk test is: "The data were sampled from a normally distributed population."  This means a p < 0.05 = not normally distributed.
+
+Note, neither body mass or body length were sampled from a normally distributed population.
+
+# Graphical Exploration {.tabset .tabset-pills}
+
+Next I will explore the data visually. Since the points will overlap, I will choose a color with transparacy to display the data more clearly:
+```{r color}
+
+# Set a color to be transparent, on a scale from 0 to 1
+my_colors <- rgb(red=0.2, green=0.4, blue=0.7, alpha=0.4)
+
+```
+
+## Scatterplot {.tabset .tabset-pills}
+
+```{r scatterplot, fig.height=6, fig.width=9}
+
+# Create a scatterplot
+plot(dat_delomys$body_mass, dat_delomys$body_length,
+     main = 'Scatterplot of Body Mass and Length of Delomys spp.',
+     xlab = 'Body Mass (g)',
+     ylab = 'Body Length (mm)',
+     col = my_colors, # Color to show two species
+     pch = 3) # Change data point symbol
+
+```
+
+Note that this relationship does not seem linear. Istead it appears to curve.
+
+## Body Mass {.tabset .tabset-pills}
+```{r hist_mass}
+# Plot a histogram of body mass
+hist(dat_delomys$body_mass,
+     xlab = 'Body Mass (g)',
+     main = 'Histogram of Body Mass of Delomys spp.',
+     xlim = c(0,120), # Expand x-axis limit
+     ylim = c(0,500), # Expand y-axis limit
+     col = my_colors)
+
+```
+
+Note that the shape of the distribution does not appear normal as it shows a small right-skew / tail in the data. This matches with the results of the Shapiro-Wilk normality test providing evidence that body mass was not sampled from a normally distributed population.
+
+## Body Length {.tabset .tabset-pills}
+```{r hist_length}
+
+#Plot a histogram of body length
+hist(dat_delomys$body_length,
+     xlab = 'Body Length (mm)',
+     main = 'Histogram of Body Length of Delomys spp.',
+     xlim = c(0,300), # Expand x-axis limit
+     ylim = c(0,800), # Expand y-axis limit
+     col = my_colors)
+
+```
+
+Note that this histogram is not normally distributed and has a right-skew in the data. This also matches with the results of the Shapiro-Wilk normality test providing evidence that body length was not sampled from a normally distributed population.
+
+## Species {.tabset .tabset-pills}
+```{r box_species, fig.height=6, fig.width=5}
+
+# Conditional boxplot of body mass grouped by species
+plot(dat_delomys$binomial,
+     dat_delomys$body_mass, 
+     xlab = 'Species',
+     ylab = 'Body Mass (g)',
+     main = 'Body Mass by Species of Delomys spp.',
+     col = my_colors)
+
+```
+
+Note, the body mass between D. dorsalis and D. sublineatus do not appear to be dramatically different.
+
+## Sex {.tabset .tabset-pills}
+```{r box_sex, fig.height=6, fig.width=5}
+
+# Conditional boxplot of body mass grouped by sex
+plot(dat_delomys$sex,
+     dat_delomys$body_mass, 
+     names = c('Female', 'Male'), #Customize the x-axis tick mark labels
+     xlab = 'Sex',
+     ylab = 'Body Mass (g)',
+     main = 'Body Mass by Sex of Delomys spp.',
+     col = my_colors)
+
+```
+
+Note, the body mass between females and males of Delomys spp. do not appear to be dramatically different.
+
+## Species and Sex {.tabset .tabset-pills}
+```{r box_species_sex, fig.height=7, fig.width=9}
+
+# Conditional boxplot of body mass grouped by species and sex
+boxplot(body_mass ~ binomial * sex, 
+     data = dat_delomys,
+          names = c('Female D. dorsalis', 'Female D. sublineatus',
+                    'Male D. dorsalis', 'Male D. sublineatus'),
+     xlab = 'Species',
+     ylab = 'Body Mass (g)',
+     main = 'Boxplot of Body Mass by Species and Sex of Delomys spp.',
+     col = my_colors)
+
+```
+
+Note, the body mass between D. dorsalis and D. sublineatus split by sex appear to show differences between some of the groups. The greatest differences are:
+
+- D. sublineatus appear slightly lighter than D. dorsalis.
+
+- Females appear slightly lighter when compared to males of the same species.
+
+# Model Building
+
+Next I will build a linear model:
+```{r linear}
+
+# Model 1: simple linear regression body_length ~ body_mass
+fit1 = lm(body_length ~ body_mass, data = dat_delomys)
+
+# Model 2: 1-way ANOVA body_mass ~ sex
+fit2 = lm(body_mass ~ sex, data = dat_delomys)
+
+# Model 3: 1-way ANOVA body_mass ~ binomial
+fit3 = lm(body_mass ~ binomial, data = dat_delomys)
+
+# Model 4: 2-way additive ANOVA body_mass ~ sex + binomial
+fit4 = lm(body_mass ~ sex + binomial, data = dat_delomys)
+
+# Model 5: 2-way factorial ANOVA body_mass ~ sex * binomial
+fit5 = lm(body_mass ~ sex * binomial, data = dat_delomys)
+
+```
+
+# Model Diagnostics {.tabset .tabset-pills}
+
+Let’s check whether the models fulfill the assumption of normality of the residuals using a graphical and numerical approach.
+
+## `fit1` {.tabset .tabset-pills}
+```{r mod_diag1}
+
+# Graphical
+hist(residuals(fit1),
+     main = 'Histogram of residuals of linear model \nbody_length ~ body_mass',
+     xlab = 'Residuals',
+     xlim = c(-100,150),
+     col = my_colors)
+
+# Numerical
+shapiro.test(fit1$residuals)
+
+```
+
+Both the histogram, with a very high peak and right-skew, and the Shapiro-Wilk test provide evidence that the residuals for this model are not normally distributed.
+
+
+## `fit2` {.tabset .tabset-pills}
+```{r mod_diag2}
+
+# Graphical
+hist(residuals(fit2),
+     main = 'Histogram of residuals of linear model \nbody_mass ~ sex',
+     xlab = 'Residuals',
+     xlim = c(-55,70),
+     ylim = c(0,500),
+     col = my_colors)
+
+# Numerical
+shapiro.test(fit2$residuals)
+
+```
+
+The histogram appears to be somewhat normally distributed. However, the Shapiro-Wilk test provides evidence that the residuals for this model are not normally distributed. 
+
+
+## `fit3` {.tabset .tabset-pills}
+```{r mod_diag3}
+
+# Graphical
+hist(residuals(fit3),
+     main = 'Histogram of residuals of linear model \nbody_mass ~ species',
+     xlab = 'Residuals',
+     xlim = c(-55,75),
+     ylim = c(0,500),
+     col = my_colors)
+
+# Numerical
+shapiro.test(fit3$residuals)
+
+```
+
+The histogram appears to be somewhat normally distributed with a very small right-skew. However, the Shapiro-Wilk test provides evidence that the residuals for this model are not normally distributed. 
+
+
+## `fit4` {.tabset .tabset-pills}
+```{r mod_diag4}
+
+# Graphical
+hist(residuals(fit4),
+     main = 'Histogram of residuals of linear model \nbody_mass ~ sex + species',
+     xlab = 'Residuals',
+     xlim = c(-55,75),
+     ylim = c(0,500),
+     col = my_colors)
+
+# Numerical
+shapiro.test(fit4$residuals)
+
+```
+
+The histogram appears to be somewhat normally distributed but with a very small right-skew. However, the Shapiro-Wilk test provides evidence that the residuals for this model are not normally distributed. 
+
+
+## `fit5` {.tabset .tabset-pills}
+```{r mod_diag5}
+
+# Graphical
+hist(residuals(fit5),
+     main = 'Histogram of residuals of linear model \nbody_mass ~ sex * species',
+     xlab = 'Residuals',
+     xlim = c(-55,75),
+     ylim = c(0,500),
+     col = my_colors)
+
+# Numerical
+shapiro.test(fit5$residuals)
+
+```
+
+The histogram appears to be somewhat normally distributed but with a very small right-skew. However, the Shapiro-Wilk test provides evidence that the residuals for this model are not normally distributed. 
+
+## Residuals Violations
+
+Note that although none of the fitted models passed normality assumption tests, the largest violation was `fit1`. The other four models' histograms showed somewhat normally distributed values.
+
+# Model Interpretation
+
+# Coefficient tables: {.tabset .tabset-pills}
+
+Let's look at the coefficient tables:
+
+## `fit1` {.tabset .tabset-pills}
+```{r coef1}
+
+knitr::kable(coef(summary(fit1)), digits=4)
+
+```
+
+Note:
+
+- The mass/length relationship is two orders of magnitude different.
+
+- The expected body length of an an animal that weighs 100g is
+= Intercept + Estimate * X
+= 76.1247 + 0.8755 * 100
+= 163.6747 mm
+
+- The expected body length of an animal that weighs 0g is 
+= Intercept + Estimate * X
+= 76.1247 + 0.8755 * 0
+= Intercept + Estimate * X
+= 76.1247 mm
+
+
+## `fit2` {.tabset .tabset-pills}
+```{r coef2}
+
+knitr::kable(coef(summary(fit2)), digits=4)
+
+```
+
+
+## `fit3` {.tabset .tabset-pills}
+```{r coef3}
+
+knitr::kable(coef(summary(fit3)), digits=4)
+
+```
+
+
+## `fit4` {.tabset .tabset-pills}
+```{r coef4}
+
+knitr::kable(coef(summary(fit4)), digits=4)
+
+```
+
+
+## `fit5` {.tabset .tabset-pills}
+```{r coef5}
+
+knitr::kable(coef(summary(fit5)), digits=4)
+
+```
+
+## Summary:
+
+- The base level for sex is female. 
+
+- The base level for binomial/species is Delomys dorsalis.
+
+- Males are heavier.
+
+- Delomys dorsalis is heavier.
+
+# ANOVA tables: {.tabset .tabset-pills}
+
+Let's look at the ANOVA tables:
+
+## `fit2` {.tabset .tabset-pills}
+```{r anova2}
+
+knitr::kable(anova(fit2), digits=4)
+
+```
+
+## `fit3` {.tabset .tabset-pills}
+```{r anova3}
+
+knitr::kable(anova(fit3), digits=4)
+
+```
+
+## `fit4` {.tabset .tabset-pills}
+```{r anova4}
+
+knitr::kable(anova(fit4), digits=4)
+
+```
+
+## `fit5` {.tabset .tabset-pills}
+```{r anova5}
+
+knitr::kable(anova(fit5), digits=4)
+
+```
+
+## Summary:
+
+- Sex and species are significant predictors for body mass.
+
+- The interaction between sex and species was not significant (p = 0.9504).
+
+- The significance (as measured by p-value) for either of the main effects (sex and species) did not differ much between the single-predictor models, the additive model, and the interactive model.
+
+For sex, fit2: p = 0.000195, fit4: p = 0.000114, fit5: 0.000115
+
+For species, fit3: p = 0.0000, fit4: p = 0.0000, fit5: p=0.0000
+
+
+# Model Comparison
+
+Let's compare the model AIC's:
+```{r aic}
+
+AIC(fit2)
+
+AIC(fit3)
+
+AIC(fit4)
+
+AIC(fit5)
+
+```
+
+- Models 4 and 5 have the lowest AIC.
+
+I would select models 4 and 5. There is not much of a difference in AIC between model 4 and model 5 and the next lowest AIC is more than 5 units away from the second lowest AIC. Because the joint effect of sex and species was not statistically significant in model 5, these models have somewhat similar results. They are a reasonable fit and lead to coefficients that are reasonably close in values. Ecological explanations for the main effects by themselves can be done with model 4: body mass varying by sex and body mass varying by species. Additonally, by disregarding the interaction factor, the model is simpler. Discussing model 5 with an interaction term would only be necessary if the interaction was ecologically significant.
