@@ -292,8 +292,11 @@ dat_1[dat_1$numbers_1 > 6, 'numbers_1']
 # Select elements greater than 6 from 'numbers_1' variable and return 'letters' elements
 dat_1[dat_1$numbers_1 > 6, 'letters']
 
-# Select rows and columns that includes elements greater than 6 from 'numbers_1' variable
+# Select rows that include elements greater than 6 from 'numbers_1' variable
 dat_1[dat_1$numbers_1 > 6,]
+
+# Select rows that include elements equal to 6 from 'numbers_1' variable
+dat_1[dat_1$numbers_1==6,]
 
 ```
 
