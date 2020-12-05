@@ -36,7 +36,7 @@ options(knitr.duplicate.label = TRUE)
 
 # Introduction {.tabset .tabset-pills}
 
-Basic R components serve as foundational to advanced programming concepts. The following guide is a general overview of the components utilized in base R programming and frequentist statistics.
+Basic R components serve as foundational to advanced programming concepts. The following guide is a general overview of some of the components utilized in base R programming and frequentist statistics.
 
 # RStudio Help {.tabset .tabset-pills}
 
@@ -96,16 +96,17 @@ Use `eval=FALSE` to keep the code chunk from being evaluated (only display the c
 
 To embed a plot, add it to your code chunk. Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot. 
 
-You can adjust the size of the plots on your rendered document using the following code chunk arguments:
-
-`fig.height=`,`fig.width=`
-
-You can adjust the aspect ratio using `fig.aspect=`.
+You can adjust the size of the plots on your rendered document using the following code chunk arguments: `fig.height=`,`fig.width=`. You can adjust the aspect ratio using `fig.aspect=`.
 
 Here's an example with a penguins demo data set:
-```{r penguins, echo=FALSE, fig.height=5, fig.width=7}
+```{r install1, eval=FALSE}
 
-# If not installed, install penguins data set using install.packages('palmerpenguins')
+# If not installed, install penguins data
+install.packages('palmerpenguins')
+
+```
+
+```{r penguins, echo=FALSE, fig.height=5, fig.width=7}
 
 # Load the penguins package
 require(palmerpenguins)
@@ -119,34 +120,64 @@ hist(penguins$flipper_length_mm)
 # Functions 1: Data Structure Functions {.tabset .tabset-pills}
 ## `c()` {.tabset .tabset-pills}
 
-**Vectors**
+**Vectors with `c()`**
 
-The function `c()` *combines* or *concatenates* its arguments into a vector (a 1-dimensional data structure consisting of 1 or more elements).
+The `c()` function *combines* or *concatenates* elements into a vector (a 1-dimensional data structure consisting of 1 or more elements).
 
-- All of the elements must be of the same type, i.e. character and numeric types can be combined in the same call to `c()` but the vector type will be character. head()
+- All of the elements should be of the same type. Character and numeric types can be combined in the same call to `c()` but the elements will all be stored as characters.
 
 Here's some examples using numeric and character data types:
 
-```{r}
+```{r c}
 # Create a vector of numbers
 num_vec  = c(1, 4, 8, 9, 15)
 
 # Create a vector of characters
-char_vec = c('a', 'fish', 'data is cool')
+char_vec = c('a', 'I love fish', 'data is cool')
 
 # Create a vector of characters that includes numbers as characters
-mixed_vec = c('A', 'Z', 1, 16)
+mixed_vec = c('Apple', 'Zebra', 1, 16)
 
 ```
 
-I can view the contents of a vector by typing the name of the vector, or using the `print()` function.
+View the contents of a vector by typing the name of the vector, or using the `print()` function.
 
-```{r}
+Check the class of data using `class()`.
+
+```{r print}
 # Type the name of the vector into the console to print the contents
 num_vec
 
 # The print() function accomplishes the same task
 print(char_vec)
+
+# View the class of the data
+class(mixed_vec)
+
+```
+
+
+## `seq()` {.tabset .tabset-pills}
+
+**Vectors with `seq()`**
+
+Create a vector using sequential numbers with a mimimum and maximum increased by 1 unit in between using `:`. The increment can also be customized by using `seq()`.
+
+Here's some examples:
+
+```{r vector}
+
+# Create a vector using 1 unit increments
+my_vec1 = 1:10
+
+# View
+my_vec1
+
+# Create a vector using custom increments
+my_vec2 = seq(0, 10, by = 2)
+
+# View
+my_vec2
 ```
 
 
@@ -154,7 +185,7 @@ print(char_vec)
 
 **Matrices**
 
-A matrix is a two-dimensional data structure. Creating a matrix can be done with the function `matrix()` by specifying the elements to fill it with, number of rows(`nrow`), and number of columns (`ncol`).
+A matrix is a two-dimensional data structure. Creating a matrix can be done with the function `matrix()` by specifying the elements to fill it with, the number of rows (`nrow`), and the number of columns (`ncol`).
 
 - If either the number of rows *or* columns is specified, the other dimension argument is not needed.
 
@@ -174,14 +205,30 @@ matrix(1:16, nrow = 4)
 # Create a 4x4 matrix populated by row
 my_matrix1 = matrix(1:16, nrow = 4, byrow = TRUE)
 
+# View
+my_matrix1
+
 # Name the rows and columns
 my_matrix2 = matrix(1:16, nrow = 4, dimnames = list(c('R1', 'R2', 'R3', 'R4'), c('C1', 'C2', 'C3', 'C4')))
+
+# View
+my_matrix2
 
 # Create a 4x5 matrix populated by row with recyled values
 my_matrix3 = matrix(c(1, 16), nrow = 4, ncol = 5)
 
+# View
+my_matrix3
+
 # Character and numeric variables can be mixed
 my_matrix4 = matrix(c('A', 'Z', 1, 16), nrow = 4, ncol = 5)
+
+# View
+my_matrix4
+
+# The elements will all be converted to character data types
+(my_matrix4)[3,1] # See subset() tab for subsetting detail
+class((my_matrix4)[3,1])
 
 ```
 
@@ -200,29 +247,36 @@ Here's some examples using numeric and character data types:
 
 ```{r data_frame_example_1}
 # Build a data frame from scratch
-
 dat_1 = data.frame(letters = c('b', 'w', 'B'), 
                    numbers_1 = c(34, 6, 123454))
 
-# Print the contents by typing the name of the data frame
+# View
 dat_1
 
 ```
 
+
+## `subset()` {.tabset .tabset-pills}
+
+**Subsetting**
+
 Subsets can be used to view, utilize, or discard specific segments of the data frame. Subset a data frame by using operators. You can combine a subset operator with a condition statement to select the specific segments of the data frame.
 
-There are three ways to do this:
+There are three main ways to do this:
 
-- Use the `$` symbol. R Studio auto-populates the variable names which you can use as a drop-down menu to select the variable of interest. Alternately, if the name of a column is known, it can be typed after the `$`.
+- Use the `$` symbol. RStudio auto-populates the variable names which you can use as a drop-down menu to select the variable of interest. Alternately, if the name of a column is known, it can be typed after the `$`.
 
 ```{r data_frame_subsetting_1}
+
+# View
+dat_1
 
 # Subset a column by variable name
 dat_1$letters
 
 ```
 
-- Use the `[]` indexing operator to select specific segments of the data. The first argument denotes the rows and the second denotes the columns. 
+- Use the `[]` indexing operator to select specific segments of the data. The first argument denotes the desired elements (leave blank to return all elements of the specified variable) and the second denotes the variable name of interest (leave blank to return all elements that meet the condition in the first argument).
 
 ```{r data_frame_subsetting_2}
 
@@ -251,7 +305,6 @@ dat_1[dat_1$numbers_1 > 6,]
 subset(dat_1, subset = numbers_1 > 6)
 
 # Name the subset to store it as a data frame
-
 my_subset = subset(dat_1, subset = numbers_1 > 6)
 
 print(my_subset)
@@ -386,9 +439,14 @@ dim(dat_1)
 Use the head() function to print the first few lines of a data frame.
 
 Here's an example with a penguins demo data set:
-```{r head}
+```{r install2, eval=FALSE}
 
-# If not installed, install penguins data set using install.packages('palmerpenguins')
+# If not installed, install penguins data set
+install.packages('palmerpenguins')
+
+```
+
+```{r head}
 
 # Load the penguins package
 require(palmerpenguins)
@@ -463,14 +521,19 @@ sd(dat_1$numbers_1)
 Scatterplots can be created using `plot()` for continuous data.
 
 Here's an example with a penguins demo data set:
-```{r scatterplot_1, fig.asp=0.75}
+```{r install3, eval=FALSE}
 
-# If not installed, install penguins data set using install.packages('palmerpenguins')
+# If not installed, install penguins data set
+install.packages('palmerpenguins')
+
+```
+
+```{r scatterplot_1, fig.asp=0.75}
 
 # Load the penguins package
 require(palmerpenguins)
 
-# Using formula notation, the response variable is on the left side, followed by the tilde expression `~`, and then all the explanatory variables are on the right side. The name of the data frame follows.
+# Using formula notation, the response variable is on the left side, followed by the tilde expression '~', and then all the explanatory variables are on the right side. The name of the data frame follows.
 plot(bill_length_mm ~ body_mass_g, data = penguins)
 
 ```
@@ -555,9 +618,14 @@ pch = 25, filled triangle point down blue
 Histograms show the frequency of binned vector data. Histograms can be created using `hist()`.
 
 Here's an example with a penguins demo data set:
-```{r histogram, fig.asp=0.75}
+```{r install4, eval=FALSE}
 
-# If not installed, install penguins data set using install.packages('palmerpenguins')
+# If not installed, install penguins data set
+install.packages('palmerpenguins')
+
+```
+
+```{r histogram, fig.asp=0.75}
 
 # Load the penguins package
 require(palmerpenguins)
@@ -588,10 +656,17 @@ hist(penguins$body_mass_g,
 
 Boxplots can be created using `boxplot()` for continuous combined with categorical data.
 
-Here's an example with a penguins demo data set:
-```{r boxplot, fig.asp=0.75}
+- Conditional boxplots can be made using 1 continuous and 1 or more categorical variables.
 
-# If not installed, install penguins data set using install.packages('palmerpenguins')
+Here's an example with a penguins demo data set:
+```{r install5, eval=FALSE}
+
+# If not installed, install penguins data set
+install.packages('palmerpenguins')
+
+```
+
+```{r boxplot1, fig.asp=0.75}
 
 # Load the penguins package
 require(palmerpenguins)
@@ -601,8 +676,12 @@ boxplot(penguins$bill_length_mm,
         xlab = 'Bill Length (mm)', # Add an x-axis label
         horizontal = TRUE) # Rotate the boxplot
 
-# Using formula notation, the response variable is on the left side, followed by the tilde expression `~`, and then the categorical explanatory variable is on the right side. The name of the data frame follows.
+# Using formula notation, the response variable is on the left side, followed by the tilde expression '~', and then the categorical explanatory variable is on the right side. The name of the data frame follows.
 boxplot(bill_length_mm ~ species, data = penguins)
+
+```
+
+```{r boxplot2, fig.width=10, fig.height=7}
 
 # Multiple explanatory variables can be used by adding '*' between variable names
 boxplot(bill_length_mm ~ species*sex, data = penguins)
@@ -633,15 +712,20 @@ Parameters for plots can be customized using the `par()` function. When combined
 
 - The number of rows and columns can be specified. The first number is for number of rows, and the second is for columns.
 
+```{r install6, eval=FALSE}
+
+# If not installed, install penguins data set
+install.packages('palmerpenguins')
+
+```
+
 ```{r par}
-
-# Create a plot window with 6 plots
-par(mfrow = c(2,3))
-
-# If not installed, install penguins data set using install.packages('palmerpenguins')
 
 # Load the penguins package
 require(palmerpenguins)
+
+# Create a plot window with 6 plots
+par(mfrow = c(2,3))
 
 # Plot 1, top row
 hist(penguins$bill_length_mm,
@@ -666,7 +750,7 @@ plot(flipper_length_mm ~ body_mass_g, data = penguins)
 
 ```
 
-(!) Reset the plot window after plotting
+(!) Reset the plot window after plotting:
 
 ```{r}
 
@@ -691,6 +775,8 @@ The Probability Density Function, i.e. the height of the curve at `x`, can be ca
 x = 5 # Set the value for x or call in the dnorm()
 dnorm(x, mean = 2, sd = 3)
 
+dnorm(5, 2, 3)
+
 ```
 
 ## `pnorm()` {.tabset .tabset-pills}
@@ -707,11 +793,13 @@ The Cumulative Density Function, i.e. the area under the curve left of `q`, can 
 q = 5 # Set the value for q or call in the pnorm()
 pnorm(q, mean = 2, sd = 3, lower.tail = FALSE)
 
+pnorm(5, 2, 3, lower.tail = FALSE)
+
 ```
 
 ## `qnorm()` {.tabset .tabset-pills}
 
-The quantile function, i.e. the `p` percentile, can be calculated by `qnorm` for normal distributions. Note, `p` is the decimal version of the percentage. It is the inverse function of the Cumulative Density Function.
+The quantile function, i.e. the `p` percentile, can be calculated by `qnorm` for normal distributions (`p` is the decimal version of the percentage). It is the inverse function of the Cumulative Density Function.
 
 - The default settings are `mean = 0`, `sd = 1`, and `lower.tail = TRUE` for a value of `p` or less.
 
@@ -722,6 +810,8 @@ The quantile function, i.e. the `p` percentile, can be calculated by `qnorm` for
 #The quantile function for a normal distribution
 p = 0.6 # Set the value for p or call in the qnorm()
 qnorm(p, mean = 2, sd = 3, lower.tail = FALSE)
+
+qnorm(0.6, 2, 3, lower.tail = FALSE)
 
 ```
 
@@ -739,6 +829,8 @@ The Probability Density Function can be calculated by `dbinom()` for binomial di
 # The Probability Density Function for a binomial distribution
 x = 5 # Set the value for x or call in the dbinom()
 dbinom(x, size = 20, prob = 0.3)
+
+dbinom(5, 20, 0.3)
 
 ```
 
@@ -759,11 +851,13 @@ The Cumulative Density Function, i.e. the area to the left of `q`, can be calcul
 q = 5 # Set the value for q or call in the pbinom()
 pbinom(q, size = 20, prob = 0.3, lower.tail = FALSE)
 
+pbinom(5, 20, 0.3, lower.tail = FALSE)
+
 ```
 
 ## `qbinom()` {.tabset .tabset-pills}
 
-The quantile function, i.e. the `p` percentile, can be calculated by `qbinom` for binomial distributions. Note, `p` is the decimal version of the percentage. It is the inverse function of the Cumulative Density Function.
+The quantile function, i.e. the `p` percentile, can be calculated by `qbinom` for binomial distributions (`p` is the decimal version of the percentage). It is the inverse function of the Cumulative Density Function.
 
 - The `size` argument is the number of trials, which can be 0 or more.
 
@@ -776,6 +870,8 @@ The quantile function, i.e. the `p` percentile, can be calculated by `qbinom` fo
 #The quantile function for a binomial distribution
 p = 0.6 # Set the value for p or call in the qbinom()
 qbinom(p, size = 20, prob = 0.3, lower.tail = FALSE)
+
+qbinom(0.6, 20, 0.3, lower.tail = FALSE)
 
 ```
 
@@ -793,7 +889,7 @@ To load the package after installing, you can use either `libary()` or `require(
 - `require()` is good for code that will be shared because you can check if the package is installed, and either load it if installed already, or install and load it if not.
 
 Here's an example with the package 'here':
-```{r}
+```{r here}
 
 if (!require(here)) install.packages('here')
 library(here)
@@ -840,6 +936,13 @@ dat_birds = read.csv(here::here('data', 'hab.sta.csv'))
 The following is analysis on data collected on two species of small mammals in the Atlantic forests of Brazil.
 
 First, let's load the data:
+```{r install_here2, eval=FALSE}
+
+# If not installed, install 'here' 
+install.packages('here')
+
+```
+
 ```{r get_data}
 
 # Load the 'here' package
@@ -883,22 +986,22 @@ my_colors <- rgb(red=0.2, green=0.4, blue=0.7, alpha=0.4)
 
 ## Scatterplot {.tabset .tabset-pills}
 
-```{r scatterplot, fig.height=6, fig.width=9}
+```{r scatterplot, fig.height=5, fig.width=6}
 
 # Create a scatterplot
 plot(dat_delomys$body_mass, dat_delomys$body_length,
      main = 'Scatterplot of Body Mass and Length of Delomys spp.',
      xlab = 'Body Mass (g)',
      ylab = 'Body Length (mm)',
-     col = my_colors, # Color to show two species
-     pch = 3) # Change data point symbol
+     col = my_colors, # Custom color
+     pch = 3) # Change the data point symbol
 
 ```
 
 Note that this relationship does not seem linear. Istead it appears to curve.
 
 ## Body Mass {.tabset .tabset-pills}
-```{r hist_mass}
+```{r hist_mass, fig.height=4, fig.width=6}
 # Plot a histogram of body mass
 hist(dat_delomys$body_mass,
      xlab = 'Body Mass (g)',
@@ -912,7 +1015,7 @@ hist(dat_delomys$body_mass,
 Note that the shape of the distribution does not appear normal as it shows a small right-skew / tail in the data. This matches with the results of the Shapiro-Wilk normality test providing evidence that body mass was not sampled from a normally distributed population.
 
 ## Body Length {.tabset .tabset-pills}
-```{r hist_length}
+```{r hist_length, fig.height=4, fig.width=6}
 
 #Plot a histogram of body length
 hist(dat_delomys$body_length,
@@ -924,7 +1027,7 @@ hist(dat_delomys$body_length,
 
 ```
 
-Note that this histogram is not normally distributed and has a right-skew in the data. This also matches with the results of the Shapiro-Wilk normality test providing evidence that body length was not sampled from a normally distributed population.
+Note that this histogram is not normally distributed, the data is not symmetrical around the peak, and there is a right-skew in the data. This also matches with the results of the Shapiro-Wilk normality test providing evidence that body length was not sampled from a normally distributed population.
 
 ## Species {.tabset .tabset-pills}
 ```{r box_species, fig.height=6, fig.width=5}
@@ -939,10 +1042,10 @@ plot(dat_delomys$binomial,
 
 ```
 
-Note, the body mass between D. dorsalis and D. sublineatus do not appear to be dramatically different.
+Note that D. sublineatus appear to be slightly lighter than D. dorsalis.
 
 ## Sex {.tabset .tabset-pills}
-```{r box_sex, fig.height=6, fig.width=5}
+```{r box_sex, fig.height=5, fig.width=4}
 
 # Conditional boxplot of body mass grouped by sex
 plot(dat_delomys$sex,
@@ -955,15 +1058,15 @@ plot(dat_delomys$sex,
 
 ```
 
-Note, the body mass between females and males of Delomys spp. do not appear to be dramatically different.
+Note that the body mass between females and males of Delomys spp. does not appear to be dramatically different.
 
 ## Species and Sex {.tabset .tabset-pills}
-```{r box_species_sex, fig.height=7, fig.width=9}
+```{r box_species_sex, fig.height=6, fig.width=9}
 
 # Conditional boxplot of body mass grouped by species and sex
 boxplot(body_mass ~ binomial * sex, 
      data = dat_delomys,
-          names = c('Female D. dorsalis', 'Female D. sublineatus',
+     names = c('Female D. dorsalis', 'Female D. sublineatus',
                     'Male D. dorsalis', 'Male D. sublineatus'),
      xlab = 'Species',
      ylab = 'Body Mass (g)',
@@ -980,7 +1083,7 @@ Note, the body mass between D. dorsalis and D. sublineatus split by sex appear t
 
 # Model Building
 
-Next I will build a linear model:
+Next I will build linear models:
 ```{r linear}
 
 # Model 1: simple linear regression body_length ~ body_mass
@@ -1005,7 +1108,7 @@ fit5 = lm(body_mass ~ sex * binomial, data = dat_delomys)
 Let’s check whether the models fulfill the assumption of normality of the residuals using a graphical and numerical approach.
 
 ## `fit1` {.tabset .tabset-pills}
-```{r mod_diag1}
+```{r mod_diag1, fig.height=4, fig.width=6}
 
 # Graphical
 hist(residuals(fit1),
@@ -1023,7 +1126,7 @@ Both the histogram, with a very high peak and right-skew, and the Shapiro-Wilk t
 
 
 ## `fit2` {.tabset .tabset-pills}
-```{r mod_diag2}
+```{r mod_diag2, fig.height=4, fig.width=6}
 
 # Graphical
 hist(residuals(fit2),
@@ -1042,7 +1145,7 @@ The histogram appears to be somewhat normally distributed. However, the Shapiro-
 
 
 ## `fit3` {.tabset .tabset-pills}
-```{r mod_diag3}
+```{r mod_diag3, fig.height=4, fig.width=6}
 
 # Graphical
 hist(residuals(fit3),
@@ -1061,7 +1164,7 @@ The histogram appears to be somewhat normally distributed with a very small righ
 
 
 ## `fit4` {.tabset .tabset-pills}
-```{r mod_diag4}
+```{r mod_diag4, fig.height=4, fig.width=6}
 
 # Graphical
 hist(residuals(fit4),
@@ -1080,7 +1183,7 @@ The histogram appears to be somewhat normally distributed but with a very small 
 
 
 ## `fit5` {.tabset .tabset-pills}
-```{r mod_diag5}
+```{r mod_diag5, fig.height=4, fig.width=6}
 
 # Graphical
 hist(residuals(fit5),
@@ -1097,13 +1200,13 @@ shapiro.test(fit5$residuals)
 
 The histogram appears to be somewhat normally distributed but with a very small right-skew. However, the Shapiro-Wilk test provides evidence that the residuals for this model are not normally distributed. 
 
-## Residuals Violations
+## Summary
 
 Note that although none of the fitted models passed normality assumption tests, the largest violation was `fit1`. The other four models' histograms showed somewhat normally distributed values.
 
 # Model Interpretation
 
-# Coefficient tables: {.tabset .tabset-pills}
+# Coefficient tables {.tabset .tabset-pills}
 
 Let's look at the coefficient tables:
 
@@ -1119,14 +1222,21 @@ Note:
 - The mass/length relationship is two orders of magnitude different.
 
 - The expected body length of an an animal that weighs 100g is
+
 = Intercept + Estimate * X
+
 = 76.1247 + 0.8755 * 100
+
 = 163.6747 mm
 
 - The expected body length of an animal that weighs 0g is 
+
 = Intercept + Estimate * X
+
 = 76.1247 + 0.8755 * 0
+
 = Intercept + Estimate * X
+
 = 76.1247 mm
 
 
@@ -1161,7 +1271,7 @@ knitr::kable(coef(summary(fit5)), digits=4)
 
 ```
 
-## Summary:
+## Summary {.tabset .tabset-pills}
 
 - The base level for sex is female. 
 
@@ -1169,9 +1279,9 @@ knitr::kable(coef(summary(fit5)), digits=4)
 
 - Males are heavier.
 
-- Delomys dorsalis is heavier.
+- Delomys dorsalis are heavier.
 
-# ANOVA tables: {.tabset .tabset-pills}
+# ANOVA tables {.tabset .tabset-pills}
 
 Let's look at the ANOVA tables:
 
@@ -1203,7 +1313,7 @@ knitr::kable(anova(fit5), digits=4)
 
 ```
 
-## Summary:
+## Summary
 
 - Sex and species are significant predictors for body mass.
 
