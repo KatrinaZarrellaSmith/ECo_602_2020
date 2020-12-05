@@ -1777,11 +1777,15 @@ dat_1[dat_1$numbers_1 &gt; 6, &#39;numbers_1&#39;]</code></pre>
 dat_1[dat_1$numbers_1 &gt; 6, &#39;letters&#39;]</code></pre>
 <pre><code>## [1] b B
 ## Levels: b B w</code></pre>
-<pre class="r"><code># Select rows and columns that includes elements greater than 6 from &#39;numbers_1&#39; variable
+<pre class="r"><code># Select rows that include elements greater than 6 from &#39;numbers_1&#39; variable
 dat_1[dat_1$numbers_1 &gt; 6,]</code></pre>
 <pre><code>##   letters numbers_1
 ## 1       b        34
 ## 3       B    123454</code></pre>
+<pre class="r"><code># Select rows that include elements equal to 6 from &#39;numbers_1&#39; variable
+dat_1[dat_1$numbers_1==6,]</code></pre>
+<pre><code>##   letters numbers_1
+## 2       w         6</code></pre>
 <ul>
 <li>Use the <code>subset()</code> function to select specific segments of the data.</li>
 </ul>
