@@ -1331,7 +1331,7 @@ For species, fit3: p = 0.0000, fit4: p = 0.0000, fit5: p=0.0000
 
 # Model Comparison
 
-Let's compare the model AIC's:
+Let's compare the model AICs:
 ```{r aic}
 
 AIC(fit2)
