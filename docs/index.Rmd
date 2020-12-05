@@ -161,7 +161,7 @@ class(mixed_vec)
 
 **Vectors with `seq()`**
 
-Create a vector using sequential numbers with a mimimum and maximum increased by 1 unit in between using `:`. The increment can also be customized by using `seq()`.
+Create a vector using sequential numbers with a minimum and maximum increased by 1 unit in between using `:`. The increment can also be customized by using `seq()`.
 
 Here's some examples:
 
@@ -304,7 +304,7 @@ dat_1[dat_1$numbers_1==6,]
 
 ```{r data_frame_subsetting_3}
 
-# Select rows and columns that includes elements greater than 6 from 'numbers_1' variable
+# Select rows that include elements greater than 6 from 'numbers_1' variable
 subset(dat_1, subset = numbers_1 > 6)
 
 # Name the subset to store it as a data frame
@@ -979,7 +979,7 @@ Note, neither body mass or body length were sampled from a normally distributed 
 
 # Graphical Exploration {.tabset .tabset-pills}
 
-Next I will explore the data visually. Since the points will overlap, I will choose a color with transparacy to display the data more clearly:
+Next I will explore the data visually. Since the points will overlap, I will choose a color with transparency to display the data more clearly:
 ```{r color}
 
 # Set a color to be transparent, on a scale from 0 to 1
@@ -1001,7 +1001,7 @@ plot(dat_delomys$body_mass, dat_delomys$body_length,
 
 ```
 
-Note that this relationship does not seem linear. Istead it appears to curve.
+Note that this relationship does not seem linear. Instead it appears to curve.
 
 ## Body Mass {.tabset .tabset-pills}
 ```{r hist_mass, fig.height=4, fig.width=6}
@@ -1346,4 +1346,4 @@ AIC(fit5)
 
 - Models 4 and 5 have the lowest AIC.
 
-I would select models 4 and 5. There is not much of a difference in AIC between model 4 and model 5 and the next lowest AIC is more than 5 units away from the second lowest AIC. Because the joint effect of sex and species was not statistically significant in model 5, these models have somewhat similar results. They are a reasonable fit and lead to coefficients that are reasonably close in values. Ecological explanations for the main effects by themselves can be done with model 4: females and males are associated with different body masses and D. dorsalis and D. sublineatus are associated with differnt body masses. Additonally, by disregarding the interaction factor, the model is simpler. Discussing model 5 with an interaction term would only be necessary if the interaction between sex and species was ecologically significant.
+I would select models 4 and 5. There is not much of a difference in AIC between model 4 and model 5 and the next lowest AIC is more than 5 units away from the second lowest AIC. Because the joint effect of sex and species was not statistically significant in model 5, these models have somewhat similar results. They are a reasonable fit and lead to coefficients that are reasonably close in values. Ecological explanations for the main effects by themselves can be done with model 4: females and males are associated with different body masses and D. dorsalis and D. sublineatus are associated with different body masses. Additionally, by disregarding the interaction factor, the model is simpler. Discussing model 5 with an interaction term would only be necessary if the interaction between sex and species was ecologically significant.
