@@ -283,6 +283,9 @@ dat_1$letters
 # Select the 'letters' column
 dat_1[,'letters']
 
+# Select the first two columns
+dat_1[, c(1,2)]
+
 # Select the first 2 elements from the 'letters' column
 dat_1[1:2, 'letters']
 
@@ -313,6 +316,32 @@ my_subset = subset(dat_1, subset = numbers_1 > 6)
 print(my_subset)
 
 ```
+
+- Use `dplyr` functions to select segments of the data frame: 
+
+  - `select()`
+  
+  - `filter()`
+
+```{r select_subset}
+require(dplyr)
+
+# Select the variables from the data frame
+select(dat_1, letters, numbers_1)
+
+# Select all the variables from the data frame
+select(dat_1, letters:numbers_1)
+
+# Exclude from the data frame 
+select(dat_1, -letters)
+
+# Select data that meets a condition
+filter(dat_1, letters == "b") # , for 'or' and & for 'and' to add multiple conditions 
+
+
+```
+
+
 
 
 ## `length()` {.tabset .tabset-pills}
