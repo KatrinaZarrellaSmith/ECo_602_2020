@@ -1558,10 +1558,29 @@ div.tocify {
 </div>
 <div id="rstudio-help" class="section level1 tabset tabset-pills">
 <h1>RStudio Help</h1>
+<div id="function-help" class="section level2">
+<h2>Function Help</h2>
 <p>For any functions, put your cursor on the function in the console and press <code>F1</code> to get you to the help file of the function, or type <code>?</code> before the function argument in the console.</p>
 <ul>
 <li>If the complete function name is unknown, type <code>??</code> before the partial word in the console.</li>
 </ul>
+</div>
+<div id="the-global-environment" class="section level2">
+<h2>The Global Environment</h2>
+<p>You can clear the workspace using <code>rm(list=ls())</code>.</p>
+<pre class="r"><code># clear R environment
+rm(list=ls())</code></pre>
+<p>You can save the workspace when closing RStudio using <code>quit()</code> and selecting option <code>Y</code>. To save while working, use the <code>save.image()</code> function.</p>
+<pre class="r"><code>#save the global environment
+save.image()</code></pre>
+</div>
+<div id="citing" class="section level2">
+<h2>Citing</h2>
+<p>When citing RStudio, check the version year.</p>
+<pre class="r"><code># citation year
+R.version$year</code></pre>
+<pre><code>## [1] &quot;2020&quot;</code></pre>
+</div>
 </div>
 <div id="r-markdown" class="section level1 tabset tabset-pills">
 <h1>R Markdown</h1>
@@ -1766,6 +1785,12 @@ dat_1$letters</code></pre>
 dat_1[,&#39;letters&#39;]</code></pre>
 <pre><code>## [1] b w B
 ## Levels: b B w</code></pre>
+<pre class="r"><code># Select the first two columns
+dat_1[, c(1,2)]</code></pre>
+<pre><code>##   letters numbers_1
+## 1       b        34
+## 2       w         6
+## 3       B    123454</code></pre>
 <pre class="r"><code># Select the first 2 elements from the &#39;letters&#39; column
 dat_1[1:2, &#39;letters&#39;]</code></pre>
 <pre><code>## [1] b w
@@ -1801,6 +1826,37 @@ print(my_subset)</code></pre>
 <pre><code>##   letters numbers_1
 ## 1       b        34
 ## 3       B    123454</code></pre>
+<ul>
+<li><p>Use <code>dplyr</code> functions to select segments of the data frame:</p>
+<ul>
+<li><p><code>select()</code></p></li>
+<li><p><code>filter()</code></p></li>
+</ul></li>
+</ul>
+<pre class="r"><code>require(dplyr)
+
+# Select the variables from the data frame
+select(dat_1, letters, numbers_1)</code></pre>
+<pre><code>##   letters numbers_1
+## 1       b        34
+## 2       w         6
+## 3       B    123454</code></pre>
+<pre class="r"><code># Select all the variables from the data frame
+select(dat_1, letters:numbers_1)</code></pre>
+<pre><code>##   letters numbers_1
+## 1       b        34
+## 2       w         6
+## 3       B    123454</code></pre>
+<pre class="r"><code># Exclude from the data frame 
+select(dat_1, -letters)</code></pre>
+<pre><code>##   numbers_1
+## 1        34
+## 2         6
+## 3    123454</code></pre>
+<pre class="r"><code># Select data that meets a condition
+filter(dat_1, letters == &quot;b&quot;) # , for &#39;or&#39; and &amp; for &#39;and&#39; to add multiple conditions </code></pre>
+<pre><code>##   letters numbers_1
+## 1       b        34</code></pre>
 </div>
 <div id="length" class="section level2 tabset tabset-pills">
 <h2><code>length()</code></h2>

@@ -40,9 +40,43 @@ Basic R components serve as foundational to advanced programming concepts. The f
 
 # RStudio Help {.tabset .tabset-pills}
 
+## Function Help
 For any functions, put your cursor on the function in the console and press `F1` to get you to the help file of the function, or type `?` before the function argument in the console.
 
 - If the complete function name is unknown, type `??` before the partial word in the console.
+
+
+## The Global Environment
+
+You can clear the workspace using `rm(list=ls())`.
+
+```{r clear}
+
+# clear R environment
+rm(list=ls())
+
+```
+
+You can save the workspace when closing RStudio using `quit()` and selecting option `Y`. To save while working, use the `save.image()` function.
+
+```{r saving}
+
+# save the global environment
+save.image()
+
+```
+
+
+## Citing
+When citing RStudio, check the version year.
+
+```{r citing}
+
+# citation year
+R.version$year
+
+```
+
 
 # R Markdown {.tabset .tabset-pills}
 
